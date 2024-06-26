@@ -27,7 +27,8 @@ public class UserModel implements UserDetails {
 	@NotBlank
 	private String password;
 	@NotBlank
-	private String full_name;
+	@Column(name = "full_name")
+	private String fullname;
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of( new SimpleGrantedAuthority("ROLE_USER"));

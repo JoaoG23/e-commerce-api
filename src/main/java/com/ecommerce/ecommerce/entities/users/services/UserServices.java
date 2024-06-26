@@ -86,7 +86,7 @@ public class UserServices {
 		UserViewedDTO userDTO = new UserViewedDTO();
 		userDTO.setId(userModel.getId());
 		userDTO.setUsername(userModel.getUsername());
-		userDTO.setFull_name(userModel.getFull_name());
+		userDTO.setFullname(userModel.getFullname());
 
 		return userDTO;
 	}

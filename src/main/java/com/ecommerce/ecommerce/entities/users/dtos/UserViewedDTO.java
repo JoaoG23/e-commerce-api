@@ -12,5 +12,5 @@ public class UserViewedDTO {
 
 	private Long id;
 	private String username;
-	private String full_name;
+	private String fullname;
 }

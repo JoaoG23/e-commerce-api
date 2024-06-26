@@ -14,7 +14,7 @@ public class UserCreatedDTO {
 	@NotEmpty
 	private String password;
 	@NotEmpty
-	private String full_name;
+	private String fullname;
 
 }
 
