@@ -1,4 +1,4 @@
-package com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
+package com.ecommerce.ecommerce.infra.HandlerErros;
 
 public class NotFoundCustomException extends RuntimeException {
 	public NotFoundCustomException(String msg) {

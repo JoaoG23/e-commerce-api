@@ -1,4 +1,4 @@
-package com.ecommerce.ecommerce.infra.HandlerErros.CustomException;
+package com.ecommerce.ecommerce.infra.HandlerErros;
 
 
 public class CustomException extends RuntimeException {

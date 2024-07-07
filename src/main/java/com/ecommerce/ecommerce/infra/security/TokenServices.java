@@ -1,4 +1,4 @@
-package com.ecommerce.ecommerce.infra.TokenServices;
+package com.ecommerce.ecommerce.infra.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -14,36 +14,37 @@ import java.time.ZoneOffset;
 
 @Service
 public class TokenServices {
-
 	@Value("${api.security.token.secret}")
 	private String secret;
 	public String generateToken(UserModel userModel) {
 		try {
 			Algorithm algorithm = Algorithm.HMAC256(secret);
 			return JWT.create()
-					.withIssuer("deploys_manager_api")
-					.withSubject(userModel.getUsername()) // Adiciona uma string ao token
-					.withExpiresAt(getDateExpiry())
+					.withIssuer("ecommerce_api")
+					.withSubject(userModel.getEmail())
+					.withExpiresAt(this.getDateExpiry())
 					.sign(algorithm);
 		} catch (JWTCreationException exception) {
-			throw new RuntimeException("Erro to generate token");
+			throw new RuntimeException("Error while authentication");
 		}
 	}
 
-	public String getSubject(String tokenJwt) {
+	public String validateToken(String token) {
 		try {
-
-			// Valida Token Jwt
 			Algorithm algorithm = Algorithm.HMAC256(secret);
-
 			return JWT.require(algorithm)
-					.withIssuer("deploys_manager_api")
+					.withIssuer("ecommerce_api")
 					.build()
-					.verify(tokenJwt)
+					.verify(token)
 					.getSubject();
 
 		} catch (JWTVerificationException exception){
-			throw new RuntimeException("Token invalid or expired!");
+			/*
+			Token será verificado no interceptor filterChair
+			se viér como (null), ficará como usuário
+			não autenticado;
+			 */
+			return null;
 		}
 	}
 

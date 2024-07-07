@@ -1,13 +1,9 @@
 package com.ecommerce.ecommerce.infra.HandlerErros;
 
 
-import com.ecommerce.ecommerce.infra.HandlerErros.CustomException.CustomException;
-import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException.NotFoundCustomException;
-import com.ecommerce.ecommerce.infra.HandlerErros.UserNotFoundException.UserNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,7 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class HandlerErros {
 
-	// Not Found sem mensagem
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<?> handleStatus404() {
 		return ResponseEntity.notFound().build();

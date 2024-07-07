@@ -4,7 +4,7 @@ import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductViewedDTO;
 import com.ecommerce.ecommerce.entities.products.model.ProductModel;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
-import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException.NotFoundCustomException;
+import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
