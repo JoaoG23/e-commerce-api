@@ -26,7 +26,7 @@ public class TokenServices {
 					.withExpiresAt(getDateExpiry())
 					.sign(algorithm);
 		} catch (JWTCreationException exception) {
-			throw new RuntimeException("Erro to generate token", exception);
+			throw new RuntimeException("Erro to generate token");
 		}
 	}
 
@@ -43,7 +43,7 @@ public class TokenServices {
 					.getSubject();
 
 		} catch (JWTVerificationException exception){
-			throw new RuntimeException("Token invalid or expired!", exception);
+			throw new RuntimeException("Token invalid or expired!");
 		}
 	}
 

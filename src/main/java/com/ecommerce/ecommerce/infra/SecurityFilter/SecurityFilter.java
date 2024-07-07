@@ -2,6 +2,7 @@ package com.ecommerce.ecommerce.infra.SecurityFilter;
 
 
 
+import com.ecommerce.ecommerce.entities.users.model.UserModel;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import com.ecommerce.ecommerce.infra.TokenServices.TokenServices;
 import jakarta.servlet.FilterChain;
@@ -31,12 +32,10 @@ public class SecurityFilter extends OncePerRequestFilter { // Realizar um filtra
 
 		if (tokenFound != null) {
 			var subject = tokenServices.getSubject(tokenFound); // Verifica token valido
-			var user = userRepository.findByUsername(subject);
+			UserModel user = (UserModel) userRepository.findByUsername(subject);
 			var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()); // Busca autenticação e destribui na aplicação
-
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
-
 		filterChain.doFilter(request, response); // Realiza a validação de todos os items da aplicação
 	}
 

@@ -18,10 +18,13 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class AuthenticationControllerTest {
+	private final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkZXBsb3lzX21hbmFnZXJfYXBpIiwiaWF0IjoxNzE1MDkzMTIwLCJleHAiOjE5MDQzOTU3NjIsImF1ZCI6IiIsInN1YiI6ImpvYW8ifQ.WPZ7jg4n-iwrQ5lQJcSDBGjBj_0uMwo7WLcTOdTFmRI"; // replace this with your actual JWT
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -36,14 +39,6 @@ class AuthenticationControllerTest {
 		userRepository.deleteAll();
 	}
 
-	private void createUser() {
-		UserModel userModel = new UserModel();
-		userModel.setUsername("joao");
-		userModel.setPassword("joao");
-		userModel.setFullname("Joao Guilherme");
-		userRepository.save(userModel);
-	}
-
 	@Test
 	@DisplayName("Should to do login and return status 2XX")
 	void toDologin() throws Exception {
@@ -52,15 +47,47 @@ class AuthenticationControllerTest {
 
 		createUser();
 
+		UserModel userModel = new UserModel();
+		userModel.setUsername("joao");
+		userModel.setPassword("joao");
+		userModel.setFullname("Joao Guilherme");
+
+		userRepository.save(userModel);
+
+		System.out.println(userRepository.findAll());
 		UserAutheticationDTO userDTO = new UserAutheticationDTO();
 		userDTO.setUsername("joao");
 		userDTO.setPassword("joao");
-		//Act
 		// Assert
-		mockMvc.perform(MockMvcRequestBuilders.post("/login")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(userDTO)))
-				.andExpect(MockMvcResultMatchers.status().isOk());
+		mockMvc.perform(MockMvcRequestBuilders.post("/login").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO))).andExpect(MockMvcResultMatchers.status().isOk());
 //				.andExpect((ResultMatcher) MockMvcResultMatchers.jsonPath("$.token"));
 	}
+
+	private void createUser() {
+//		UserModel userModel = new UserModel();
+//		userModel.setUsername("joao");
+//		userModel.setPassword("joao");
+//		userModel.setFullname("Joao Guilherme");
+//
+//		userRepository.save(userModel);
+//		ObjectMapper objectMapper = new ObjectMapper();
+//
+//		UserModel userModel = new UserModel();
+//		userModel.setUsername("joao");
+//		userModel.setPassword("joao");
+//		userModel.setFullname("Joao Guilherme");
+//
+//
+//		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/users")
+//						.contentType(MediaType.APPLICATION_JSON)
+//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+//						.content(objectMapper.writeValueAsString(userModel)))
+//						.andReturn();
+//
+//		String response = mvcResult
+//				.getResponse()
+//				.getContentAsString();
+//		return response;
+	}
+
 }

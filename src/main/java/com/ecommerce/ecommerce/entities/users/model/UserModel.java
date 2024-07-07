@@ -16,10 +16,12 @@ import java.util.List;
 @Setter
 @Table(name = "users")
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserModel implements UserDetails {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private Long id;
 
 	@NotBlank
