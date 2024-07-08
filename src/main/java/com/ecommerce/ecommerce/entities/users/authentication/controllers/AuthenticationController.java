@@ -60,6 +60,6 @@ public class AuthenticationController {
 			String token = this.tokenServices.generateToken(newUser);
 			return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(token));
 		}
-		return ResponseEntity.badRequest().build();
+		return ResponseEntity.badRequest().body("User already exists");
 	}
 }
