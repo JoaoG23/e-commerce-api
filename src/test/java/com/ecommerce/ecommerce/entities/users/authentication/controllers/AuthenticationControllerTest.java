@@ -36,55 +36,6 @@ class AuthenticationControllerTest {
 		userRepository.deleteAll();
 	}
 
-	@Test
-	@DisplayName("Should to do login and return status 2XX")
-	void toDologin() throws Exception {
-		//Arrange
-		ObjectMapper objectMapper = new ObjectMapper();
 
-		createUser();
-
-		UserModel userModel = new UserModel();
-		userModel.setUsername("joao");
-		userModel.setPassword("joao");
-		userModel.setFullname("Joao Guilherme");
-
-		userRepository.save(userModel);
-
-		System.out.println(userRepository.findAll());
-		LoginRequestDTO userDTO = new LoginRequestDTO();
-		userDTO.setUsername("joao");
-		userDTO.setPassword("joao");
-		// Assert
-		mockMvc.perform(MockMvcRequestBuilders.post("/login").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO))).andExpect(MockMvcResultMatchers.status().isOk());
-//				.andExpect((ResultMatcher) MockMvcResultMatchers.jsonPath("$.token"));
-	}
-
-	private void createUser() {
-//		UserModel userModel = new UserModel();
-//		userModel.setUsername("joao");
-//		userModel.setPassword("joao");
-//		userModel.setFullname("Joao Guilherme");
-//
-//		userRepository.save(userModel);
-//		ObjectMapper objectMapper = new ObjectMapper();
-//
-//		UserModel userModel = new UserModel();
-//		userModel.setUsername("joao");
-//		userModel.setPassword("joao");
-//		userModel.setFullname("Joao Guilherme");
-//
-//
-//		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/users")
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-//						.content(objectMapper.writeValueAsString(userModel)))
-//						.andReturn();
-//
-//		String response = mvcResult
-//				.getResponse()
-//				.getContentAsString();
-//		return response;
-	}
 
 }

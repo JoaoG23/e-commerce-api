@@ -1,19 +1,19 @@
 package com.ecommerce.ecommerce.entities.products.model;
 
 
+import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProductModel;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
-@Data
+@Getter
+@Setter
 @Entity
 @ToString
 @Table(name = "products")
@@ -27,7 +27,9 @@ public class ProductModel {
 	private String name;
 	private BigDecimal price;
 	private String details;
-	private String telephone;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	private List<ImageProductModel> imagesProduct;
 
 	@CreatedDate
 	private LocalDateTime createdAt;
