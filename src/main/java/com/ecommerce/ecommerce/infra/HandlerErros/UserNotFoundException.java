@@ -1,0 +1,6 @@
+package com.ecommerce.ecommerce.infra.HandlerErros;
+public class UserNotFoundException extends RuntimeException {
+	public UserNotFoundException(String message) {
+		super(message);
+	}
+}

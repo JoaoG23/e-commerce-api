@@ -1,40 +1,65 @@
 package com.ecommerce.ecommerce.entities.users.authentication.controllers;
 
-
-
-import com.ecommerce.ecommerce.entities.users.authentication.dtos.UserAutheticationDTO;
+import com.ecommerce.ecommerce.entities.users.authentication.dtos.AuthResponseDTO;
+import com.ecommerce.ecommerce.entities.users.authentication.dtos.LoginRequestDTO;
+import com.ecommerce.ecommerce.entities.users.authentication.dtos.RegisterRequestDTO;
 import com.ecommerce.ecommerce.entities.users.model.UserModel;
-import com.ecommerce.ecommerce.infra.TokenServices.TokenServices;
-import com.ecommerce.ecommerce.infra.TokenServices.dtos.TokenDTO;
+import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
+import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
+import com.ecommerce.ecommerce.infra.HandlerErros.UserNotFoundException;
+import com.ecommerce.ecommerce.infra.security.TokenServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/auth")
 public class AuthenticationController {
-	@Autowired
-	private AuthenticationManager manager; // Ao Chamar essa classe o spring chamará a classe serviceAuthentication
 
 	@Autowired
-	private TokenServices tokenServices; // Token
+	private UserRepository repository;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private TokenServices tokenServices;
 
-	@PostMapping
-	public ResponseEntity<?> toDologin(@RequestBody @Valid UserAutheticationDTO userAutheticationDto) {
 
-		var authenticationToken = new UsernamePasswordAuthenticationToken(userAutheticationDto.getUsername(), userAutheticationDto.getPassword());
-		var authentication = manager.authenticate(authenticationToken);
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO body) throws NotFoundCustomException {
+		try {
+			UserModel user = this.repository.findByEmail(body.email()).orElseThrow(() -> new UserNotFoundException("User or password invalid"));
+			if (passwordEncoder.matches(body.password(), user.getPassword())) {
+				String token = tokenServices.generateToken(user);
+				return ResponseEntity.ok(new AuthResponseDTO(token));
+			}
+			return ResponseEntity.badRequest().build();
+		} catch (UserNotFoundException e) {
+			throw new UserNotFoundException("User or password invalid");
+		}
+	}
 
-		var tokenSession = tokenServices.generateToken((UserModel) authentication.getPrincipal()); // Busca os dados usuario para o token
+	@PostMapping("/register")
+	public ResponseEntity<?> register(@RequestBody @Valid RegisterRequestDTO body) {
+		Optional<UserModel> user = this.repository.findByEmail(body.email());
 
-		var tokenJwtDTO = new TokenDTO();
-		tokenJwtDTO.setToken(tokenSession);
-		return ResponseEntity.ok().body(tokenJwtDTO);
+		if (user.isEmpty()) {
+			UserModel newUser = new UserModel();
+			newUser.setPassword(passwordEncoder.encode(body.password()));
+			newUser.setEmail(body.email());
+			newUser.setName(body.name());
+			this.repository.save(newUser);
+
+			String token = this.tokenServices.generateToken(newUser);
+			return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(token));
+		}
+		return ResponseEntity.badRequest().body("User already exists");
 	}
 }

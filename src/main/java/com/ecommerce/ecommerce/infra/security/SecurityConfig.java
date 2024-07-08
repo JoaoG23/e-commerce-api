@@ -1,6 +1,6 @@
-package com.ecommerce.ecommerce.infra.SecurityConfigurations;
+package com.ecommerce.ecommerce.infra.security;
 
-import com.ecommerce.ecommerce.infra.SecurityFilter.SecurityFilter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,28 +17,27 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfigurations {
+public class SecurityConfig {
 
 	@Autowired
-	private SecurityFilter securityFilter;
+	private CustomUserDetailsService userDetailsService;
+
+	@Autowired
+	SecurityFilter securityFilter;
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-
-		// Outro modo de ser fazer
-		return httpSecurity.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-				.and().authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/login").permitAll() // Verbo LOGIN = Post
-				.requestMatchers(HttpMethod.GET, "/h2/***").permitAll()
-				.anyRequest().authenticated()
-				.and().addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-				.build();
-
-
-	}
-
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-		return configuration.getAuthenticationManager();
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http
+				.csrf(csrf -> csrf.disable())
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+						.requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+						.requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+						.anyRequest().authenticated()
+				)
+				.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+		return http.build();
 	}
 
 	@Bean
@@ -46,4 +45,8 @@ public class SecurityConfigurations {
 		return new BCryptPasswordEncoder();
 	}
 
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
 }

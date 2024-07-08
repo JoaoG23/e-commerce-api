@@ -1,16 +1,4 @@
 package com.ecommerce.ecommerce.entities.users.dtos;
 
+public record UserViewedDTO(String id, String name, String email, String password) { }
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-@Setter
-@Getter
-@ToString
-public class UserViewedDTO {
-
-	private Long id;
-	private String username;
-	private String fullname;
-}
