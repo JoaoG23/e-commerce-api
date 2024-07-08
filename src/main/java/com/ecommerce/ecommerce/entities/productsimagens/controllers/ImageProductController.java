@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/image-products")
+@RequestMapping("/products/image-products")
 public class ImageProductController {
 	@Autowired
 	private ImageProductServices imageProductServices;
