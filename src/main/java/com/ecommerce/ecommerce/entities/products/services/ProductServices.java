@@ -1,12 +1,9 @@
 package com.ecommerce.ecommerce.entities.products.services;
 
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
-import com.ecommerce.ecommerce.entities.products.dtos.ProductImageCreatedDTO;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductViewedDTO;
-import com.ecommerce.ecommerce.entities.products.model.ProductModel;
+import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
-import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
-import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProductModel;
 import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
 import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 import jakarta.transaction.Transactional;
@@ -31,25 +28,25 @@ public class ProductServices {
 	private ImageProductRepository imageProductRepository;
 
 	@Transactional
-	public ProductModel create(ProductCreatedDTO productDTO) {
-		ProductModel productModel = new ProductModel();
-		BeanUtils.copyProperties(productDTO, productModel);
-		return productRepository.save(productModel);
+	public Product create(ProductCreatedDTO productDTO) {
+		Product product = new Product();
+		BeanUtils.copyProperties(productDTO, product);
+		return productRepository.save(product);
 	}
 
 
 	@Transactional
 	public void updateById(String id, ProductCreatedDTO productDTO) {
 		validateIfProductNotExistsById(id);
-		ProductModel productModel = new ProductModel();
-		productModel.setId(id);
-		productRepository.save(productModel);
+		Product product = new Product();
+		product.setId(id);
+		productRepository.save(product);
 	}
 
 	public List<ProductViewedDTO> findAll() {
-		List<ProductModel> products = productRepository.findAll();
+		List<Product> products = productRepository.findAll();
 		List<ProductViewedDTO> productDTOs = new ArrayList<>();
-		for (ProductModel product : products) {
+		for (Product product : products) {
 			ProductViewedDTO productDTO = convertModelToProductViewedDTO(product);
 			productDTOs.add(productDTO);
 		}
@@ -57,7 +54,7 @@ public class ProductServices {
 	}
 
 	public Page<ProductViewedDTO> findAllByPage(Pageable pageable) {
-		Page<ProductModel> pages = productRepository.findAll(pageable);
+		Page<Product> pages = productRepository.findAll(pageable);
 
 		List<ProductViewedDTO> productDTOs = pages.getContent().stream().map(this::convertModelToProductViewedDTO).collect(Collectors.toList());
 
@@ -67,9 +64,9 @@ public class ProductServices {
 	public ProductViewedDTO findById(String id) {
 		validateIfProductNotExistsById(id);
 
-		Optional<ProductModel> productModelOptional = productRepository.findById(id);
-		ProductModel productModel = productModelOptional.get();
-		return convertModelToProductViewedDTO(productModel);
+		Optional<Product> productModelOptional = productRepository.findById(id);
+		Product product = productModelOptional.get();
+		return convertModelToProductViewedDTO(product);
 	}
 
 	public void deleteById(String id) {
@@ -77,20 +74,20 @@ public class ProductServices {
 		productRepository.deleteById(id);
 	}
 
-	private ProductViewedDTO convertModelToProductViewedDTO(ProductModel productModel) {
+	private ProductViewedDTO convertModelToProductViewedDTO(Product product) {
 		ProductViewedDTO productDTO = new ProductViewedDTO(
-				productModel.getId(),
-				productModel.getName(),
-				productModel.getPrice(),
-				productModel.getDetails(),
-				productModel.getImagesProduct()
+				product.getId(),
+				product.getName(),
+				product.getPrice(),
+				product.getDetails(),
+				product.getImagesProduct()
 		);
 
 		return productDTO;
 	}
 
 	private void validateIfProductNotExistsById(String id) {
-		Optional<ProductModel> productFound = productRepository.findById(id);
+		Optional<Product> productFound = productRepository.findById(id);
 		if (productFound.isEmpty()) {
 			throw new NotFoundCustomException("Product not found with id: " + id);
 		}

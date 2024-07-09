@@ -3,7 +3,7 @@ package com.ecommerce.ecommerce.entities.users.authentication.controllers;
 import com.ecommerce.ecommerce.entities.users.authentication.dtos.AuthResponseDTO;
 import com.ecommerce.ecommerce.entities.users.authentication.dtos.LoginRequestDTO;
 import com.ecommerce.ecommerce.entities.users.authentication.dtos.RegisterRequestDTO;
-import com.ecommerce.ecommerce.entities.users.model.UserModel;
+import com.ecommerce.ecommerce.entities.users.model.User;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 import com.ecommerce.ecommerce.infra.HandlerErros.UserNotFoundException;
@@ -35,7 +35,7 @@ public class AuthenticationController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO body) throws NotFoundCustomException {
 		try {
-			UserModel user = this.repository.findByEmail(body.email()).orElseThrow(() -> new UserNotFoundException("User or password invalid"));
+			User user = this.repository.findByEmail(body.email()).orElseThrow(() -> new UserNotFoundException("User or password invalid"));
 			if (passwordEncoder.matches(body.password(), user.getPassword())) {
 				String token = tokenServices.generateToken(user);
 				return ResponseEntity.ok(new AuthResponseDTO(token));
@@ -48,10 +48,10 @@ public class AuthenticationController {
 
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@RequestBody @Valid RegisterRequestDTO body) {
-		Optional<UserModel> user = this.repository.findByEmail(body.email());
+		Optional<User> user = this.repository.findByEmail(body.email());
 
 		if (user.isEmpty()) {
-			UserModel newUser = new UserModel();
+			User newUser = new User();
 			newUser.setPassword(passwordEncoder.encode(body.password()));
 			newUser.setEmail(body.email());
 			newUser.setName(body.name());

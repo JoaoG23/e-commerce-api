@@ -1,11 +1,8 @@
 package com.ecommerce.ecommerce.entities.products.controllers;
 
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
-import com.ecommerce.ecommerce.entities.products.dtos.ProductImageCreatedDTO;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductViewedDTO;
-import com.ecommerce.ecommerce.entities.products.model.ProductModel;
 import com.ecommerce.ecommerce.entities.products.services.ProductServices;
-import com.ecommerce.ecommerce.entities.productsimagens.services.ImageProductServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

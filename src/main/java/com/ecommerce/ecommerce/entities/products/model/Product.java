@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerce.entities.products.model;
 
 
-import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProductModel;
+import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -19,7 +19,7 @@ import java.util.List;
 @Table(name = "products")
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductModel {
+public class Product {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -29,7 +29,7 @@ public class ProductModel {
 	private String details;
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-	private List<ImageProductModel> imagesProduct;
+	private List<ImageProduct> imagesProduct;
 
 	@CreatedDate
 	private LocalDateTime createdAt;

@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerce.entities.users.services;
 
 
-import com.ecommerce.ecommerce.entities.users.model.UserModel;
+import com.ecommerce.ecommerce.entities.users.model.User;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +14,16 @@ public class UserServices {
 	private UserRepository userRepository;
 
 	@Transactional
-	public String register(UserModel userModel) {
-		var encoderPassword = new BCryptPasswordEncoder().encode(userModel.getPassword());
-		userModel.setPassword(encoderPassword);
+	public String register(User user) {
+		var encoderPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+		user.setPassword(encoderPassword);
 
-		userRepository.save(userModel);
+		userRepository.save(user);
 		return "User saved with success";
 	}
 
 //	@Transactional
-//	public String updateById(String id, UserModel userModel) {
+//	public String updateById(String id, User userModel) {
 //		validateIfUserNotExistsById(id);
 //
 //		var encoderPassword = new BCryptPasswordEncoder().encode(userModel.getPassword());
@@ -36,10 +36,10 @@ public class UserServices {
 //
 //	public List<UserViewedDTO> findAll() {
 //
-//		List<UserModel> users = userRepository.findAll();
+//		List<User> users = userRepository.findAll();
 //		List<UserViewedDTO> userDTOs = new ArrayList<>();
 //
-//		for (UserModel user : users) {
+//		for (User user : users) {
 //			UserViewedDTO userViewedDTO = convertModelToUserViewedDTO(user);
 //			userDTOs.add(userViewedDTO);
 //		}
@@ -47,7 +47,7 @@ public class UserServices {
 //	}
 //
 //	public Page<UserViewedDTO> findAllByPage(Pageable pageable) {
-//		Page<UserModel> userPage = userRepository.findAll(pageable);
+//		Page<User> userPage = userRepository.findAll(pageable);
 //
 //		List<UserViewedDTO> userDTOs = userPage.getContent().stream()
 //				.map(this::convertModelToUserViewedDTO)
@@ -59,7 +59,7 @@ public class UserServices {
 //	public UserViewedDTO findById(String id) {
 //		validateIfUserNotExistsById(id);
 //
-//		UserModel userModel = this.userRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("User not found with id: " + id));
+//		User userModel = this.userRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("User not found with id: " + id));
 //		return convertModelToUserViewedDTO(userModel);
 //	}
 //
@@ -71,8 +71,8 @@ public class UserServices {
 //	}
 //
 //
-//	private UserViewedDTO convertModelToUserViewedDTO(UserModel userModel) {
-//		// Create a new UserDTO object and populate it with data from UserModel
+//	private UserViewedDTO convertModelToUserViewedDTO(User userModel) {
+//		// Create a new UserDTO object and populate it with data from User
 //		UserViewedDTO userDTO = new UserViewedDTO();
 //		userDTO.setId(userModel.getId());
 //		userDTO.setUsername(userModel.getUsername());
@@ -82,7 +82,7 @@ public class UserServices {
 //	}
 //
 //	private void validateIfUserNotExistsById(String id) {
-//		Optional<UserModel> userFound = userRepository.findById(id);
+//		Optional<User> userFound = userRepository.findById(id);
 //		if (userFound.isEmpty()) {
 //			throw new NotFoundCustomException("User not found with id: " + id);
 //		}

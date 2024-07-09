@@ -1,9 +1,8 @@
 package com.ecommerce.ecommerce.infra.security;
 
-import com.ecommerce.ecommerce.entities.users.model.UserModel;
+import com.ecommerce.ecommerce.entities.users.model.User;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,7 +16,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	private UserRepository repository;
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		UserModel user = this.repository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-		return new User(user.getEmail(), user.getPassword(), new ArrayList<>());
+		User user = this.repository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
 	}
 }

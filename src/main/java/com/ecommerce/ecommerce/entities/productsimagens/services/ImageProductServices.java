@@ -1,8 +1,9 @@
 package com.ecommerce.ecommerce.entities.productsimagens.services;
 
+import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
 import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductViewedDTO;
-import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProductModel;
+import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
 import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 import jakarta.transaction.Transactional;
@@ -23,12 +24,17 @@ public class ImageProductServices {
 	@Autowired
 	private ImageProductRepository imageProductRepository;
 
-	@Transactional
-	public ImageProductModel create(ImageProductCreatedDTO imageProductDTO) {
+	@Autowired
+	private ProductRepository productRepository;
 
-		ImageProductModel imageProductModel = new ImageProductModel();
-		BeanUtils.copyProperties(imageProductDTO, imageProductModel);
-		return imageProductRepository.save(imageProductModel);
+	@Transactional
+	public ImageProduct create(ImageProductCreatedDTO imageProductDTO) {
+
+		ImageProduct imageProduct = new ImageProduct();
+		BeanUtils.copyProperties(imageProductDTO, imageProduct);
+
+		this.validateIfExistProductAndInsert(imageProductDTO, imageProduct);
+		return imageProductRepository.save(imageProduct);
 	}
 
 	@Transactional
@@ -36,17 +42,17 @@ public class ImageProductServices {
 
 		validateIfImageProductNotExistsById(id);
 
-		ImageProductModel imageProductModel = new ImageProductModel();
-		imageProductModel.setId(id);
-		imageProductRepository.save(imageProductModel);
+		ImageProduct imageProduct = new ImageProduct();
+		imageProduct.setId(id);
+		imageProductRepository.save(imageProduct);
 	}
 
 	public List<ImageProductViewedDTO> findAll() {
 
-		List<ImageProductModel> imageProducts = imageProductRepository.findAll();
+		List<ImageProduct> imageProducts = imageProductRepository.findAll();
 		List<ImageProductViewedDTO> imageProductDTOs = new ArrayList<>();
 
-		for (ImageProductModel imageProduct : imageProducts) {
+		for (ImageProduct imageProduct : imageProducts) {
 			ImageProductViewedDTO imageProductDTO = convertModelToImageProductViewedDTO(imageProduct);
 			imageProductDTOs.add(imageProductDTO);
 		}
@@ -54,7 +60,7 @@ public class ImageProductServices {
 	}
 
 	public Page<ImageProductViewedDTO> findAllByPage(Pageable pageable) {
-		Page<ImageProductModel> pages = imageProductRepository.findAll(pageable);
+		Page<ImageProduct> pages = imageProductRepository.findAll(pageable);
 
 		List<ImageProductViewedDTO> imageProductDTOs = pages.getContent().stream().map(this::convertModelToImageProductViewedDTO).collect(Collectors.toList());
 
@@ -64,9 +70,9 @@ public class ImageProductServices {
 	public ImageProductViewedDTO findById(String id) {
 		validateIfImageProductNotExistsById(id);
 
-		Optional<ImageProductModel> imageProductModelOptional = imageProductRepository.findById(id);
-		ImageProductModel imageProductModel = imageProductModelOptional.get();
-		return convertModelToImageProductViewedDTO(imageProductModel);
+		Optional<ImageProduct> imageProductModelOptional = imageProductRepository.findById(id);
+		ImageProduct imageProduct = imageProductModelOptional.get();
+		return convertModelToImageProductViewedDTO(imageProduct);
 	}
 
 	public void deleteById(String id) {
@@ -74,20 +80,29 @@ public class ImageProductServices {
 		imageProductRepository.deleteById(id);
 	}
 
-	private ImageProductViewedDTO convertModelToImageProductViewedDTO(ImageProductModel imageProductModel) {
+	private ImageProductViewedDTO convertModelToImageProductViewedDTO(ImageProduct imageProduct) {
 		ImageProductViewedDTO imageProductDTO = new ImageProductViewedDTO(
-				imageProductModel.getId(),
-				imageProductModel.getPath(),
-				imageProductModel.getProduct()
+				imageProduct.getId(),
+				imageProduct.getPath(),
+				imageProduct.getProduct()
 		);
 
 		return imageProductDTO;
 	}
 
 	private void validateIfImageProductNotExistsById(String id) {
-		Optional<ImageProductModel> imageProductFound = imageProductRepository.findById(id);
+		Optional<ImageProduct> imageProductFound = imageProductRepository.findById(id);
 		if (imageProductFound.isEmpty()) {
 			throw new NotFoundCustomException("ImageProduct not found with id: " + id);
 		}
+	}
+
+	private ImageProduct validateIfExistProductAndInsert(ImageProductCreatedDTO dto, ImageProduct model) {
+		if (dto.getProductsId() != null) {
+			var product = productRepository.findById(dto.getProductsId())
+					.orElseThrow(() -> new NotFoundCustomException("Product not found"));
+			model.setProduct(product);
+		}
+		return model;
 	}
 }

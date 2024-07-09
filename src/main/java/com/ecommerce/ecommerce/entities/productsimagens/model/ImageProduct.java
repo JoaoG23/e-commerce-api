@@ -1,6 +1,6 @@
 package com.ecommerce.ecommerce.entities.productsimagens.model;
 
-import com.ecommerce.ecommerce.entities.products.model.ProductModel;
+import com.ecommerce.ecommerce.entities.products.model.Product;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "images_product")
-public class ImageProductModel {
+public class ImageProduct {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -19,7 +19,7 @@ public class ImageProductModel {
 
 	@ManyToOne
 	@JoinColumn(name = "product_id")
-	private ProductModel product;
+	private Product product;
 
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
