@@ -9,15 +9,11 @@ import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ImageProductServices {
@@ -29,7 +25,6 @@ public class ImageProductServices {
 
 	@Transactional
 	public ImageProduct create(ImageProductCreatedDTO imageProductDTO) {
-
 		ImageProduct imageProduct = new ImageProduct();
 		BeanUtils.copyProperties(imageProductDTO, imageProduct);
 
@@ -39,8 +34,7 @@ public class ImageProductServices {
 
 	@Transactional
 	public void updateById(String id, ImageProductCreatedDTO imageProductDTO) {
-
-		validateIfImageProductNotExistsById(id);
+		this.validateIfImageProductNotExistsById(id);
 
 		ImageProduct imageProduct = new ImageProduct();
 		imageProduct.setId(id);
@@ -48,7 +42,6 @@ public class ImageProductServices {
 	}
 
 	public List<ImageProductViewedDTO> findAll() {
-
 		List<ImageProduct> imageProducts = imageProductRepository.findAll();
 		List<ImageProductViewedDTO> imageProductDTOs = new ArrayList<>();
 
@@ -59,13 +52,6 @@ public class ImageProductServices {
 		return imageProductDTOs;
 	}
 
-	public Page<ImageProductViewedDTO> findAllByPage(Pageable pageable) {
-		Page<ImageProduct> pages = imageProductRepository.findAll(pageable);
-
-		List<ImageProductViewedDTO> imageProductDTOs = pages.getContent().stream().map(this::convertModelToImageProductViewedDTO).collect(Collectors.toList());
-
-		return new PageImpl<>(imageProductDTOs, pageable, pages.getTotalElements());
-	}
 
 	public ImageProductViewedDTO findById(String id) {
 		validateIfImageProductNotExistsById(id);
@@ -86,7 +72,6 @@ public class ImageProductServices {
 				imageProduct.getPath(),
 				imageProduct.getProduct()
 		);
-
 		return imageProductDTO;
 	}
 

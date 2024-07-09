@@ -1,13 +1,17 @@
 package com.ecommerce.ecommerce.entities.products.controllers;
+
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
+import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
+import com.ecommerce.ecommerce.entities.users.dtos.UserCreatedDTO;
+import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -19,12 +23,15 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class ProductControllerTest {
-	private final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkZXBsb3lzX21hbmFnZXJfYXBpIiwiaWF0IjoxNzE1MDkzMTIwLCJleHAiOjE5MDQzOTU3NjIsImF1ZCI6IiIsInN1YiI6ImpvYW8ifQ.WPZ7jg4n-iwrQ5lQJcSDBGjBj_0uMwo7WLcTOdTFmRI"; // replace this with your actual JWT
+	@Value("${tokentestes}")
+	private String TOKEN;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -32,29 +39,69 @@ class ProductControllerTest {
 	@Autowired
 	private ProductRepository productRepository;
 
+	@Autowired
+	private UserRepository userRepository;
 
 	@BeforeEach
 	@AfterEach
 	void deleteAll() {
 		productRepository.deleteAll();
+		userRepository.deleteAll();
 	}
 
-//	@Test
-//	@DisplayName("Create one product with success and return 204")
-//	void createOneCase1() throws Exception {
-//		// populate this with test data
-//		ObjectMapper objectMapper = new ObjectMapper();
-//
-//		var productDTO = productReturned();
-//
-//		mockMvc.perform(MockMvcRequestBuilders.post("/products")
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + token) // add JWT in Authorization header
-//						.content(objectMapper.writeValueAsString(productDTO))) // send ProductCreatedDTO as JSON in the request body
-//				.andExpect(MockMvcResultMatchers.status().isCreated())// expect CREATED status
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.nameProduct").value("Product"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value("Descrição do produto"));
-//	}
+	@Test
+	@DisplayName("Create one product with success and return 204")
+	void createOneCase1() throws Exception {
+
+		this.createUserInitial();
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		ProductCreatedDTO product = new ProductCreatedDTO(
+				null,
+				"Product",
+				new BigDecimal(10.30),
+				"Descricão do produto",
+				null
+		);
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/products")
+						.contentType(MediaType.APPLICATION_JSON)
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
+						.content(objectMapper.writeValueAsString(product)))
+				.andExpect(MockMvcResultMatchers.status().isCreated())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Product"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Descricão do produto"));
+	}
+	@Test
+	@DisplayName("Create one product with images success and return 204")
+	void createOneCase2() throws Exception {
+
+		this.createUserInitial();
+
+		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
+		images.add(new ImageProductCreatedDTO(null, "image1.png", null));
+		images.add(new ImageProductCreatedDTO(null, "image2.png", null));
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		ProductCreatedDTO product = new ProductCreatedDTO(
+				null,
+				"Product",
+				new BigDecimal(10.30),
+				"Descricão do produto",
+				images
+		);
+		System.out.println(product);
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/products")
+						.contentType(MediaType.APPLICATION_JSON)
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
+						.content(objectMapper.writeValueAsString(product)))
+				.andExpect(MockMvcResultMatchers.status().isCreated())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Product"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Descricão do produto")
+//				.andExpect(MockMvcResultMatchers.jsonPath("$.imagesProduct[0].path").value("image1.png"))
+//				.andExpect(MockMvcResultMatchers.jsonPath("$.imagesProduct[1].path").value("image2.png"));
+	}
 //
 //	@Test
 //	@DisplayName("Update a product successfully and return 200")
@@ -145,21 +192,25 @@ class ProductControllerTest {
 //				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value("Descrição do produto"));
 //	}
 //
-//	private String createProduct() throws Exception {
-//		ObjectMapper objectMapper = new ObjectMapper();
-//		ProductCreatedDTO productDTO = productReturned();
-//
-//		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/products")
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-//						.content(objectMapper.writeValueAsString(productDTO)))
-//				.andReturn(); // get the MvcResult
-//
-//		String response = mvcResult
-//				.getResponse()
-//				.getContentAsString();
-//		return response;
-//	}
+public String createUserInitial() throws Exception {
+	ObjectMapper objectMapper = new ObjectMapper();
+	UserCreatedDTO userCreated = new UserCreatedDTO(null,
+			"Usuario de testes",
+			"admin@teste.com",
+			"admin"
+	);
+
+	MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+					.post("/auth/register")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(userCreated)))
+			.andReturn();
+
+	String response = mvcResult
+			.getResponse()
+			.getContentAsString();
+	return response;
+}
 //
 //
 //	private ProductCreatedDTO productReturned() {

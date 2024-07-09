@@ -14,6 +14,5 @@ public class ImageProductCreatedDTO {
 	private String id;
 	@NotBlank(message = "Path is mandatory")
 	private String path;
-	@NotBlank(message = "Id of product is mandatory")
 	private String productsId;
 }

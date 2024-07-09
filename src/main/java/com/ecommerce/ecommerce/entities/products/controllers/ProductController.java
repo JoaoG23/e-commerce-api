@@ -2,6 +2,7 @@ package com.ecommerce.ecommerce.entities.products.controllers;
 
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductViewedDTO;
+import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.products.services.ProductServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,15 @@ public class ProductController {
 	private ProductServices productServices;
 
 	@PostMapping
-	public ResponseEntity<String> createOne(@RequestBody @Valid ProductCreatedDTO productDTO) {
-		productServices.create(productDTO);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Product created");
+	public ResponseEntity<Product> createOne(@RequestBody @Valid ProductCreatedDTO productDTO) {
+		Product product = productServices.create(productDTO);
+		return ResponseEntity.status(HttpStatus.CREATED).body(product);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<String> updateById(@PathVariable(value = "id") String id, @RequestBody @Valid ProductCreatedDTO productDTO) {
-		productServices.updateById(id, productDTO);
-		return ResponseEntity.ok().body("Product updated");
+	public ResponseEntity<Product> updateById(@PathVariable(value = "id") String id, @RequestBody @Valid ProductCreatedDTO productDTO) {
+		Product product = productServices.updateById(id, productDTO);
+		return ResponseEntity.ok().body(product);
 	}
 
 	@DeleteMapping("/{id}")

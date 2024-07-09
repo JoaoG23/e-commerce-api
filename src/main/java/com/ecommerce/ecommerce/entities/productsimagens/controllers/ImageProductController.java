@@ -50,10 +50,4 @@ public class ImageProductController {
 		ImageProductViewedDTO imageProduct = imageProductServices.findById(id);
 		return (ResponseEntity<ImageProductViewedDTO>) ResponseEntity.ok().body(imageProduct);
 	}
-
-	@GetMapping("page")
-	public ResponseEntity<Page<ImageProductViewedDTO>> findAllByPage(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
-		var page = imageProductServices.findAllByPage(pageable);
-		return ResponseEntity.ok().body(page);
-	}
 }

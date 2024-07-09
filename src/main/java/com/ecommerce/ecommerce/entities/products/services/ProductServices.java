@@ -4,6 +4,8 @@ import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductViewedDTO;
 import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
+import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
+import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
 import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 import jakarta.transaction.Transactional;
@@ -30,17 +32,38 @@ public class ProductServices {
 	@Transactional
 	public Product create(ProductCreatedDTO productDTO) {
 		Product product = new Product();
+
 		BeanUtils.copyProperties(productDTO, product);
-		return productRepository.save(product);
+		Product productCreated = this.productRepository.save(product);
+		String idProduct = productCreated.getId();
+
+		var images = new ArrayList<ImageProductCreatedDTO>(productDTO.imageProduct());
+		Boolean isNotHaveImages = productDTO.imageProduct().isEmpty();
+
+		if (isNotHaveImages) {
+			return product;
+		}
+
+		images.forEach(image -> {
+			ImageProductCreatedDTO imageWithIdProduct = new ImageProductCreatedDTO(null, image.getPath(), idProduct);
+			ImageProduct imageProduct = new ImageProduct();
+
+			BeanUtils.copyProperties(imageWithIdProduct, imageProduct);
+			imageProduct.setProduct(product);
+			System.out.println(imageProduct);
+
+			this.imageProductRepository.save(imageProduct);
+		});
+		return product;
 	}
 
 
 	@Transactional
-	public void updateById(String id, ProductCreatedDTO productDTO) {
+	public Product updateById(String id, ProductCreatedDTO productDTO) {
 		validateIfProductNotExistsById(id);
 		Product product = new Product();
 		product.setId(id);
-		productRepository.save(product);
+		return productRepository.save(product);
 	}
 
 	public List<ProductViewedDTO> findAll() {
@@ -71,7 +94,9 @@ public class ProductServices {
 
 	public void deleteById(String id) {
 		validateIfProductNotExistsById(id);
-		productRepository.deleteById(id);
+
+//		this.imageProductRepository.deleteAllByProductId(id);
+		this.productRepository.deleteById(id);
 	}
 
 	private ProductViewedDTO convertModelToProductViewedDTO(Product product) {
