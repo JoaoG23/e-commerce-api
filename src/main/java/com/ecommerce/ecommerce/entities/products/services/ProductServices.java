@@ -62,7 +62,9 @@ public class ProductServices {
 	public Product updateById(String id, ProductCreatedDTO productDTO) {
 		validateIfProductNotExistsById(id);
 		Product product = new Product();
+		BeanUtils.copyProperties(productDTO, product);
 		product.setId(id);
+
 		return productRepository.save(product);
 	}
 
