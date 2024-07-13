@@ -34,10 +34,8 @@ import java.util.List;
 class ProductControllerTest {
 	@Value("${tokentestes}")
 	private String TOKEN;
-
 	@Autowired
 	private MockMvc mockMvc;
-
 	@Autowired
 	private ProductRepository productRepository;
 	@Autowired
@@ -105,6 +103,7 @@ class ProductControllerTest {
 						.content(objectMapper.writeValueAsString(product)))
 				.andExpect(MockMvcResultMatchers.status().isCreated())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Product"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(new BigDecimal(10.30)))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of product"));
 	}
 
@@ -152,13 +151,6 @@ class ProductControllerTest {
 		var product = new JSONObject(productString);
 
 		String id = product.getString("id");
-		var productDeleted = new ProductCreatedDTO(
-				null,
-				"Edited Product",
-				new BigDecimal(10.30),
-				"Details of product",
-				new ArrayList<ImageProductCreatedDTO>()
-		);
 
 		mockMvc.perform(MockMvcRequestBuilders.delete("/products/{id}", id)
 						.contentType(MediaType.APPLICATION_JSON)

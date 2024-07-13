@@ -11,8 +11,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,27 +30,6 @@ public class ImageProductServices {
 		return imageProductRepository.save(imageProduct);
 	}
 
-	@Transactional
-	public void updateById(String id, ImageProductCreatedDTO imageProductDTO) {
-		this.validateIfImageProductNotExistsById(id);
-
-		ImageProduct imageProduct = new ImageProduct();
-		imageProduct.setId(id);
-		imageProductRepository.save(imageProduct);
-	}
-
-	public List<ImageProductViewedDTO> findAll() {
-		List<ImageProduct> imageProducts = imageProductRepository.findAll();
-		List<ImageProductViewedDTO> imageProductDTOs = new ArrayList<>();
-
-		for (ImageProduct imageProduct : imageProducts) {
-			ImageProductViewedDTO imageProductDTO = convertModelToImageProductViewedDTO(imageProduct);
-			imageProductDTOs.add(imageProductDTO);
-		}
-		return imageProductDTOs;
-	}
-
-
 	public ImageProductViewedDTO findById(String id) {
 		validateIfImageProductNotExistsById(id);
 
@@ -69,8 +46,7 @@ public class ImageProductServices {
 	private ImageProductViewedDTO convertModelToImageProductViewedDTO(ImageProduct imageProduct) {
 		ImageProductViewedDTO imageProductDTO = new ImageProductViewedDTO(
 				imageProduct.getId(),
-				imageProduct.getPath(),
-				imageProduct.getProduct()
+				imageProduct.getPath()
 		);
 		return imageProductDTO;
 	}
