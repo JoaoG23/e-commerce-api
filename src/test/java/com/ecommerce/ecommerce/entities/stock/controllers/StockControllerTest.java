@@ -1,4 +1,5 @@
-package com.ecommerce.ecommerce.entities.products.controllers;
+package com.ecommerce.ecommerce.entities.stock.controllers;
+
 
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
@@ -14,11 +15,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -28,10 +26,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-class ProductControllerTest {
+class StockControllerTest {
 	@Value("${tokentestes}")
 	private String TOKEN;
 	@Autowired

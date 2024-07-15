@@ -2,6 +2,7 @@ package com.ecommerce.ecommerce.entities.products.model;
 
 
 import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
+import com.ecommerce.ecommerce.entities.stock.model.Stock;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@ToString
+@ToString(exclude = "imagesProduct")
 @Table(name = "products")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,6 +39,9 @@ public class Product {
 	@JsonManagedReference
 	@Column(nullable = true)
 	private List<ImageProduct> imagesProduct;
+
+	@OneToOne(mappedBy = "product")
+	private Stock stock;
 
 	@CreatedDate
 	private LocalDateTime createdAt;

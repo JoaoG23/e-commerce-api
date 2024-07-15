@@ -50,7 +50,6 @@ public class ProductServices {
 
 			BeanUtils.copyProperties(imageWithIdProduct, imageProduct);
 			imageProduct.setProduct(product);
-			System.out.println(imageProduct);
 
 			this.imageProductRepository.save(imageProduct);
 		});
@@ -64,7 +63,6 @@ public class ProductServices {
 		Product product = new Product();
 		BeanUtils.copyProperties(productDTO, product);
 		product.setId(id);
-
 		return productRepository.save(product);
 	}
 
@@ -82,7 +80,6 @@ public class ProductServices {
 		Page<Product> pages = productRepository.findAll(pageable);
 
 		List<ProductViewedDTO> productDTOs = pages.getContent().stream().map(this::convertModelToProductViewedDTO).collect(Collectors.toList());
-
 		return new PageImpl<>(productDTOs, pageable, pages.getTotalElements());
 	}
 
@@ -96,8 +93,6 @@ public class ProductServices {
 
 	public void deleteById(String id) {
 		validateIfProductNotExistsById(id);
-
-//		this.imageProductRepository.deleteAllByProductId(id);
 		this.productRepository.deleteById(id);
 	}
 
