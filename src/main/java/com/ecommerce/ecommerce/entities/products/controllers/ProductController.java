@@ -1,6 +1,7 @@
 package com.ecommerce.ecommerce.entities.products.controllers;
 
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
+import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedWithStockDTO;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductViewedDTO;
 import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.products.services.ProductServices;
@@ -25,6 +26,11 @@ public class ProductController {
 	@PostMapping
 	public ResponseEntity<Product> createOne(@RequestBody @Valid ProductCreatedDTO productDTO) {
 		Product product = productServices.create(productDTO);
+		return ResponseEntity.status(HttpStatus.CREATED).body(product);
+	}
+	@PostMapping("/with-stock")
+	public ResponseEntity<Product> createWithStock(@RequestBody @Valid ProductCreatedWithStockDTO productDTO) {
+		Product product = productServices.createWithStock(productDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(product);
 	}
 

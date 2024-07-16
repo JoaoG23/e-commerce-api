@@ -1,9 +1,12 @@
 package com.ecommerce.ecommerce.entities.products.controllers;
 
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
+import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedWithStockDTO;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
 import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
+import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockCreatedDTO;
+import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
 import com.ecommerce.ecommerce.entities.users.dtos.UserCreatedDTO;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,6 +43,8 @@ class ProductControllerTest {
 	private ProductRepository productRepository;
 	@Autowired
 	private ImageProductRepository imagesRepository;
+	@Autowired
+	private StockRepository stockRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -47,11 +52,11 @@ class ProductControllerTest {
 	@BeforeEach
 	@AfterEach
 	void deleteAll() throws Exception {
-		productRepository.deleteAll();
+		stockRepository.deleteAll();
 		imagesRepository.deleteAll();
+		productRepository.deleteAll();
 		userRepository.deleteAll();
 	}
-
 
 	@Test
 	@DisplayName("Create one product with success and return 204")
@@ -94,6 +99,35 @@ class ProductControllerTest {
 				"Product",
 				new BigDecimal(10.30),
 				"Details of product",
+				images
+		);
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/products")
+						.contentType(MediaType.APPLICATION_JSON)
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
+						.content(objectMapper.writeValueAsString(product)))
+				.andExpect(MockMvcResultMatchers.status().isCreated())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Product"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(new BigDecimal(10.30)))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of product"));
+	}
+
+	@Test
+	@DisplayName("Create one product with images and add items stock success and return 204")
+	void createOneWithStock() throws Exception {
+		this.createUserInitial();
+
+		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
+		images.add(new ImageProductCreatedDTO(null, "image1.png", null));
+		images.add(new ImageProductCreatedDTO(null, "image2.png", null));
+
+		var objectMapper = new ObjectMapper();
+		var product = new ProductCreatedWithStockDTO(
+				null,
+				"Product",
+				new BigDecimal(10.30),
+				"Details of product",
+				new ItemStockCreatedDTO(null, null, 1, 88.00),
 				images
 		);
 

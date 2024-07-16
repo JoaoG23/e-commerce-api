@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record ItemStockIncreaseDTO(
 		@NotNull
-		Boolean increase ,
+		Boolean increase,
 		@NotNull(message = "Quantity is mandatory") Integer quantity,
 		@NotBlank(message = "Id Product is mandatory") String productId
 ) {

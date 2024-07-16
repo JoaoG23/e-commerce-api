@@ -1,12 +1,14 @@
 package com.ecommerce.ecommerce.entities.products.services;
 
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
+import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedWithStockDTO;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductViewedDTO;
 import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
 import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
+import com.ecommerce.ecommerce.entities.stock.model.Stock;
 import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
 import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 import jakarta.transaction.Transactional;
@@ -34,6 +36,7 @@ public class ProductServices {
 	@Autowired
 	private ImageProductRepository imageProductRepository;
 
+	@Transactional
 	public Product create(ProductCreatedDTO productDTO) {
 		Product product = new Product();
 
@@ -45,7 +48,44 @@ public class ProductServices {
 
 
 	@Transactional
+	public Product createWithStock(ProductCreatedWithStockDTO productDTO) {
+		Product product = new Product();
+
+		BeanUtils.copyProperties(productDTO, product);
+		Product productCreated = this.productRepository.save(product);
+
+		Stock stock = new Stock();
+		BeanUtils.copyProperties(productDTO.stock(), stock);
+		stock.setProduct(productCreated);
+		stockRepository.save(stock);
+
+		return this.createImagesStockProduct(productCreated, productDTO);
+	}
+
+
+	@Transactional
 	public Product createImagesProduct(Product product, ProductCreatedDTO productDTO) {
+
+		String idProduct = product.getId();
+		var images = new ArrayList<ImageProductCreatedDTO>(productDTO.imageProduct());
+
+		Boolean isNotHaveImages = productDTO.imageProduct().isEmpty();
+		if (isNotHaveImages) {
+			return product;
+		}
+		images.forEach(image -> {
+			ImageProductCreatedDTO imageWithIdProduct = new ImageProductCreatedDTO(null, image.getPath(), idProduct);
+			ImageProduct imageProduct = new ImageProduct();
+
+			BeanUtils.copyProperties(imageWithIdProduct, imageProduct);
+			imageProduct.setProduct(product);
+
+			this.imageProductRepository.save(imageProduct);
+		});
+		return product;
+	}
+	@Transactional
+	public Product createImagesStockProduct(Product product, ProductCreatedWithStockDTO productDTO) {
 
 		String idProduct = product.getId();
 		var images = new ArrayList<ImageProductCreatedDTO>(productDTO.imageProduct());

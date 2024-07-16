@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record ItemStockCreatedDTO(
-		@NotBlank(message = "Product is mandatory") String id,
+		String id,
 		@NotBlank(message = "Product is mandatory") String productId,
 		@NotNull(message = "Quantity is mandatory") Integer quantity,
 		@NotBlank(message = "Lot price is mandatory") Double lotPrice

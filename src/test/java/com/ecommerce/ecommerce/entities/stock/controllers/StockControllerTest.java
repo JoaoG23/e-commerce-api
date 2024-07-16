@@ -4,6 +4,7 @@ import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
 import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockCreatedDTO;
+import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockIncreaseDTO;
 import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
 import com.ecommerce.ecommerce.entities.users.dtos.UserCreatedDTO;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -81,81 +83,37 @@ class StockControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.lotPrice").value(stock.lotPrice()));
 
 	}
-//
-//	@Test
-//	@DisplayName("Create one stock with images success and return 204")
-//	void createOneCase2() throws Exception {
-//		this.createUserInitial();
-//
-//		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
-//		images.add(new ImageProductCreatedDTO(null, "image1.png", null));
-//		images.add(new ImageProductCreatedDTO(null, "image2.png", null));
-//
-//		ObjectMapper objectMapper = new ObjectMapper();
-//		StockCreatedDTO stock = new StockCreatedDTO(
-//				null,
-//				"Stock",
-//				new BigDecimal(10.30),
-//				"Details of stock",
-//				images
-//		);
-//
-//		mockMvc.perform(MockMvcRequestBuilders.post("/stocks")
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
-//						.content(objectMapper.writeValueAsString(stock)))
-//				.andExpect(MockMvcResultMatchers.status().isCreated())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Stock"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(new BigDecimal(10.30)))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of stock"));
-//	}
-//
-//	@Test
-//	@DisplayName("Update a stock successfully and return 200")
-//	void updateOneCase1() throws Exception {
-//		this.createUserInitial();
-//
-//		ObjectMapper objectMapper = new ObjectMapper();
-//		String stockString = this.createStock();
-//
-//		// Transform in JSON object
-//		JSONObject stock = new JSONObject(stockString);
-//		// Access the 'id' property
-//		String id = stock.getString("id");
-//
-//		var stockUpdated = new StockCreatedDTO(
-//				null,
-//				"Edited Stock",
-//				new BigDecimal(10.30),
-//				"Details of stock",
-//				new ArrayList<ImageProductCreatedDTO>()
-//		);
-//
-//		mockMvc.perform(MockMvcRequestBuilders.put("/stocks/{id}", id)
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
-//						.content(objectMapper.writeValueAsString(stockUpdated)))
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Edited Stock"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(new BigDecimal(10.30)))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of stock"));
-//	}
-//
+	@Test
+	@DisplayName("Increase stock item by productId with success and return 200")
+	void increaseProductCase1() throws Exception {
+		this.createUserInitial();
 
-//
-//	@Test
-//	@DisplayName("Find all stocks and return success 200")
-//	void findAllCase1() throws Exception {
-//		this.createUserInitial();
-//		this.createStock();
-//
-//		mockMvc.perform(MockMvcRequestBuilders.get("/stocks"))
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Stock"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$[0].details").value("Details of stock"));
-//	}
-//
+		String product = this.createProduct();
+		var getProduct = new JSONObject(product);
+		String productId = getProduct.getString("id");
+
+		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		String stockItem = this.createStockByProductId(productId);
+		var getStock = new JSONObject(stockItem);
+
+		var increased = new ItemStockIncreaseDTO(
+				false,
+				1,
+				productId
+		);
+		mockMvc.perform(MockMvcRequestBuilders.patch("/stocks/increase-decrease")
+						.contentType(MediaType.APPLICATION_JSON)
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
+						.content(objectMapper.writeValueAsString(increased)))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.productId").value(productId))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(increased.quantity()));
+	}
+
+
+	//
 //	@Test
 //	@DisplayName("Find all by page and return success 200")
 //	void findByPageCase2() throws Exception {
@@ -171,22 +129,32 @@ class StockControllerTest {
 //				.andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(1));
 //	}
 //
-//	@Test
-//	@DisplayName("Find one by id and return success 200")
-//	void findOneByIdCase1() throws Exception {
-//		// Create Stock
-//		this.createUserInitial();
-//		String stockString = this.createStock();
-//		JSONObject stock = new JSONObject(stockString);
-//		// Extract Id
-//		String id = stock.getString("id");
-//
-//		mockMvc.perform(MockMvcRequestBuilders.get("/stocks/{id}", id)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Stock"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of stock"));
-//	}
+	@Test
+	@DisplayName("Find one by productId and return success 200")
+	void findOneByIdCase1() throws Exception {
+		this.createUserInitial();
+
+		String product = this.createProduct();
+		var getProduct = new JSONObject(product);
+		String productId = getProduct.getString("id");
+
+		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
+		ObjectMapper objectMapper = new ObjectMapper();
+		var stock = new ItemStockCreatedDTO(
+				null,
+				productId,
+				1,
+				10.2
+		);
+
+		String stockItem = this.createStockByProductId(productId);
+		var getStock = new JSONObject(stockItem);
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/stocks/{productId}", productId)
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.productId").value(productId));
+	}
 
 	private String createUserInitial() throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
