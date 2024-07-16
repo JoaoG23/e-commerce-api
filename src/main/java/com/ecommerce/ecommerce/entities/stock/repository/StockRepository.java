@@ -11,4 +11,7 @@ import java.util.List;
 public interface StockRepository extends JpaRepository<Stock, String> {
 	@Query(value = "SELECT * FROM public.stock_products s WHERE s.products_id = :products_id", nativeQuery = true)
 	List<Stock> findByProductsId(@Param("products_id") String productId);
+
+	@Query(value = "DELETE FROM public.stock_products s WHERE s.products_id = :products_id", nativeQuery = true)
+	List<Stock> deleteByProductsId(@Param("products_id") String productId);
 }

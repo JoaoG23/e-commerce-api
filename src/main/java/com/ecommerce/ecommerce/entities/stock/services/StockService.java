@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerce.entities.stock.services;
 
+import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockCreatedDTO;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockIncreaseDTO;
@@ -44,7 +45,7 @@ public class StockService {
 		return decreaseQuantityProduct(itemDto);
 	}
 
-	public ItemStockIncreaseDTO increaseQuantityProduct(ItemStockIncreaseDTO itemDto) {
+	private ItemStockIncreaseDTO increaseQuantityProduct(ItemStockIncreaseDTO itemDto) {
 		List<Stock> itemFound = stockRepository.findByProductsId(itemDto.productId());
 		if (itemFound.isEmpty()) {
 			throw new NotFoundCustomException("Item not found");
@@ -66,7 +67,7 @@ public class StockService {
 		return itemDto;
 	}
 
-	public ItemStockIncreaseDTO decreaseQuantityProduct(ItemStockIncreaseDTO itemDto) {
+	private ItemStockIncreaseDTO decreaseQuantityProduct(ItemStockIncreaseDTO itemDto) {
 		List<Stock> itemFound = stockRepository.findByProductsId(itemDto.productId());
 		if (itemFound.isEmpty()) {
 			throw new NotFoundCustomException("Item not found");
@@ -92,33 +93,8 @@ public class StockService {
 		return itemDto;
 	}
 
-
-	public ItemStockCreatedDTO update(String id, ItemStockCreatedDTO itemDto) {
-		stockRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Item not found"));
-		var productFound = productRepository.findById(itemDto.productId()).orElseThrow(() -> new NotFoundCustomException("Product not found"));
-
-		Stock item = new Stock();
-		item.setProduct(productFound);
-		item.setQuantity(itemDto.quantity());
-		item.setLotPrice(Double.valueOf(itemDto.lotPrice()));
-
-		stockRepository.save(item);
-		return itemDto;
-	}
-
-
-	public void delete(String id) {
-		Stock stock = stockRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Stock not found"));
-		stockRepository.delete(stock);
-	}
-
-	public List<ItemStockViewedDTO> findAll() {
-		return stockRepository.findAll().stream().map(this::convertModelToDtoViewed).collect(Collectors.toList());
-//		return stockRepository.findAll().stream().map(e -> convertModelToDtoViewed(e)).collect(Collectors.toList());
-	}
-
-	public ItemStockViewedDTO findById(String id) {
-		var stockModel = stockRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Stock not found"));
+	public ItemStockViewedDTO findByProductId(String productId) {
+		Stock stockModel = stockRepository.findByProductsId(productId).get(0);
 		return convertModelToDtoViewed(stockModel);
 	}
 

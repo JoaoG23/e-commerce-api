@@ -1,0 +1,204 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > UserServices</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.ecommerce.ecommerce.entities.users.services</a>
+</div>
+
+<h1>Coverage Summary for Class: UserServices (com.ecommerce.ecommerce.entities.users.services)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserServices</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/5)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UserServices$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/5)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.ecommerce.ecommerce.entities.users.services;
+&nbsp;
+&nbsp;
+&nbsp;import com.ecommerce.ecommerce.entities.users.model.User;
+&nbsp;import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
+&nbsp;import jakarta.transaction.Transactional;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class UserServices {</b>
+&nbsp;	@Autowired
+&nbsp;	private UserRepository userRepository;
+&nbsp;
+&nbsp;	@Transactional
+&nbsp;	public String register(User user) {
+<b class="nc">&nbsp;		var encoderPassword = new BCryptPasswordEncoder().encode(user.getPassword());</b>
+<b class="nc">&nbsp;		user.setPassword(encoderPassword);</b>
+&nbsp;
+<b class="nc">&nbsp;		userRepository.save(user);</b>
+<b class="nc">&nbsp;		return &quot;User saved with success&quot;;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;//	@Transactional
+&nbsp;//	public String updateById(String id, User userModel) {
+&nbsp;//		validateIfUserNotExistsById(id);
+&nbsp;//
+&nbsp;//		var encoderPassword = new BCryptPasswordEncoder().encode(userModel.getPassword());
+&nbsp;//		userModel.setPassword(encoderPassword);
+&nbsp;//		userModel.setId(id);
+&nbsp;//
+&nbsp;//		this.userRepository.save(userModel);
+&nbsp;//		return &quot;User updated with success&quot;;
+&nbsp;//	}
+&nbsp;//
+&nbsp;//	public List&lt;UserViewedDTO&gt; findAll() {
+&nbsp;//
+&nbsp;//		List&lt;User&gt; users = userRepository.findAll();
+&nbsp;//		List&lt;UserViewedDTO&gt; userDTOs = new ArrayList&lt;&gt;();
+&nbsp;//
+&nbsp;//		for (User user : users) {
+&nbsp;//			UserViewedDTO userViewedDTO = convertModelToUserViewedDTO(user);
+&nbsp;//			userDTOs.add(userViewedDTO);
+&nbsp;//		}
+&nbsp;//		return userDTOs;
+&nbsp;//	}
+&nbsp;//
+&nbsp;//	public Page&lt;UserViewedDTO&gt; findAllByPage(Pageable pageable) {
+&nbsp;//		Page&lt;User&gt; userPage = userRepository.findAll(pageable);
+&nbsp;//
+&nbsp;//		List&lt;UserViewedDTO&gt; userDTOs = userPage.getContent().stream()
+&nbsp;//				.map(this::convertModelToUserViewedDTO)
+&nbsp;//				.collect(Collectors.toList());
+&nbsp;//
+&nbsp;//		return new PageImpl&lt;&gt;(userDTOs, pageable, userPage.getTotalElements());
+&nbsp;//	}
+&nbsp;//
+&nbsp;//	public UserViewedDTO findById(String id) {
+&nbsp;//		validateIfUserNotExistsById(id);
+&nbsp;//
+&nbsp;//		User userModel = this.userRepository.findById(id).orElseThrow(() -&gt; new NotFoundCustomException(&quot;User not found with id: &quot; + id));
+&nbsp;//		return convertModelToUserViewedDTO(userModel);
+&nbsp;//	}
+&nbsp;//
+&nbsp;//	public String deleteById(String id) {
+&nbsp;//		validateIfUserNotExistsById(id);
+&nbsp;//
+&nbsp;//		userRepository.deleteById(id);
+&nbsp;//		return &quot;User deleted with success&quot; + id;
+&nbsp;//	}
+&nbsp;//
+&nbsp;//
+&nbsp;//	private UserViewedDTO convertModelToUserViewedDTO(User userModel) {
+&nbsp;//		// Create a new UserDTO object and populate it with data from User
+&nbsp;//		UserViewedDTO userDTO = new UserViewedDTO();
+&nbsp;//		userDTO.setId(userModel.getId());
+&nbsp;//		userDTO.setUsername(userModel.getUsername());
+&nbsp;//		userDTO.setFullname(userModel.getFullname());
+&nbsp;//
+&nbsp;//		return userDTO;
+&nbsp;//	}
+&nbsp;//
+&nbsp;//	private void validateIfUserNotExistsById(String id) {
+&nbsp;//		Optional&lt;User&gt; userFound = userRepository.findById(id);
+&nbsp;//		if (userFound.isEmpty()) {
+&nbsp;//			throw new NotFoundCustomException(&quot;User not found with id: &quot; + id);
+&nbsp;//		}
+&nbsp;//	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-15 21:58</div>
+</div>
+</body>
+</html>

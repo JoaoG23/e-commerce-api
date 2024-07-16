@@ -1,0 +1,203 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ImageProductServices</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.ecommerce.ecommerce.entities.productsimagens.services</a>
+</div>
+
+<h1>Coverage Summary for Class: ImageProductServices (com.ecommerce.ecommerce.entities.productsimagens.services)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ImageProductServices</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95,7%
+  </span>
+  <span class="absValue">
+    (22/23)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ImageProductServices$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95,7%
+  </span>
+  <span class="absValue">
+    (22/23)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.ecommerce.ecommerce.entities.productsimagens.services;
+&nbsp;
+&nbsp;import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
+&nbsp;import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
+&nbsp;import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductViewedDTO;
+&nbsp;import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
+&nbsp;import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
+&nbsp;import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
+&nbsp;import jakarta.transaction.Transactional;
+&nbsp;import org.springframework.beans.BeanUtils;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class ImageProductServices {</b>
+&nbsp;	@Autowired
+&nbsp;	private ImageProductRepository imageProductRepository;
+&nbsp;
+&nbsp;	@Autowired
+&nbsp;	private ProductRepository productRepository;
+&nbsp;
+&nbsp;	@Transactional
+&nbsp;	public ImageProduct create(ImageProductCreatedDTO imageProductDTO) {
+<b class="fc">&nbsp;		ImageProduct imageProduct = new ImageProduct();</b>
+<b class="fc">&nbsp;		BeanUtils.copyProperties(imageProductDTO, imageProduct);</b>
+&nbsp;
+<b class="fc">&nbsp;		this.validateIfExistProductAndInsert(imageProductDTO, imageProduct);</b>
+<b class="fc">&nbsp;		return imageProductRepository.save(imageProduct);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ImageProductViewedDTO findById(String id) {
+<b class="fc">&nbsp;		validateIfImageProductNotExistsById(id);</b>
+&nbsp;
+<b class="fc">&nbsp;		Optional&lt;ImageProduct&gt; imageProductModelOptional = imageProductRepository.findById(id);</b>
+<b class="fc">&nbsp;		ImageProduct imageProduct = imageProductModelOptional.get();</b>
+<b class="fc">&nbsp;		return convertModelToImageProductViewedDTO(imageProduct);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void deleteById(String id) {
+<b class="fc">&nbsp;		validateIfImageProductNotExistsById(id);</b>
+<b class="fc">&nbsp;		imageProductRepository.deleteById(id);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private ImageProductViewedDTO convertModelToImageProductViewedDTO(ImageProduct imageProduct) {
+<b class="fc">&nbsp;		ImageProductViewedDTO imageProductDTO = new ImageProductViewedDTO(</b>
+<b class="fc">&nbsp;				imageProduct.getId(),</b>
+<b class="fc">&nbsp;				imageProduct.getPath()</b>
+&nbsp;		);
+<b class="fc">&nbsp;		return imageProductDTO;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void validateIfImageProductNotExistsById(String id) {
+<b class="fc">&nbsp;		Optional&lt;ImageProduct&gt; imageProductFound = imageProductRepository.findById(id);</b>
+<b class="pc">&nbsp;		if (imageProductFound.isEmpty()) {</b>
+<b class="nc">&nbsp;			throw new NotFoundCustomException(&quot;ImageProduct not found with id: &quot; + id);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private ImageProduct validateIfExistProductAndInsert(ImageProductCreatedDTO dto, ImageProduct model) {
+<b class="pc">&nbsp;		if (dto.getProductsId() != null) {</b>
+<b class="fc">&nbsp;			var product = productRepository.findById(dto.getProductsId())</b>
+<b class="fc">&nbsp;					.orElseThrow(() -&gt; new NotFoundCustomException(&quot;Product not found&quot;));</b>
+<b class="fc">&nbsp;			model.setProduct(product);</b>
+&nbsp;		}
+<b class="fc">&nbsp;		return model;</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-15 21:58</div>
+</div>
+</body>
+</html>

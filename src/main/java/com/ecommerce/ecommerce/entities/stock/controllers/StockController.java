@@ -1,10 +1,15 @@
 package com.ecommerce.ecommerce.entities.stock.controllers;
 
+import com.ecommerce.ecommerce.entities.products.dtos.ProductViewedDTO;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockCreatedDTO;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockIncreaseDTO;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockViewedDTO;
 import com.ecommerce.ecommerce.entities.stock.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,29 +28,19 @@ public class StockController {
 		return new ResponseEntity<ItemStockCreatedDTO>(stockService.create(item), HttpStatus.CREATED);
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<ItemStockCreatedDTO> updateById(@PathVariable String id, @RequestBody ItemStockCreatedDTO stockDetails) {
-		return ResponseEntity.ok(stockService.update(id, stockDetails));
-	}
-
 	@PatchMapping("/increase-decrease")
 	public ResponseEntity<ItemStockIncreaseDTO> selectIncreaseOrDecreaseProduct(@RequestBody ItemStockIncreaseDTO item) {
 		return ResponseEntity.ok(stockService.selectIncreaseOrDecreaseProduct(item));
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteById(@PathVariable String id) {
-		stockService.delete(id);
-		return ResponseEntity.noContent().build();
+	@GetMapping("page")
+	public ResponseEntity<Page<ItemStockViewedDTO>> findAllByPage(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+		var page = stockService.findAllByPage(pageable);
+		return ResponseEntity.ok().body(page);
 	}
 
-	@GetMapping
-	public ResponseEntity<List<ItemStockViewedDTO>> findAll() {
-		return ResponseEntity.ok().body(stockService.findAll());
-	}
-
-	@GetMapping("/{id}")
-	public ResponseEntity<ItemStockViewedDTO> findOneById(@PathVariable String id) {
-		return ResponseEntity.ok().body(stockService.findById(id));
+	@GetMapping("/{productId}")
+	public ResponseEntity<ItemStockViewedDTO> findOneByProductId(@PathVariable String productId) {
+		return ResponseEntity.ok().body(stockService.findByProductId(productId));
 	}
 }

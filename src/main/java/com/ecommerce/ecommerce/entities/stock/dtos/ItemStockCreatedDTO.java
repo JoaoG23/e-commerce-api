@@ -7,6 +7,6 @@ public record ItemStockCreatedDTO(
 		@NotBlank(message = "Product is mandatory") String id,
 		@NotBlank(message = "Product is mandatory") String productId,
 		@NotNull(message = "Quantity is mandatory") Integer quantity,
-		@NotBlank(message = "Lot price is mandatory") String lotPrice
+		@NotBlank(message = "Lot price is mandatory") Double lotPrice
 ) {
 }

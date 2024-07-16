@@ -1,0 +1,164 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > SecurityFilter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.ecommerce.ecommerce.infra.security</a>
+</div>
+
+<h1>Coverage Summary for Class: SecurityFilter (com.ecommerce.ecommerce.infra.security)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SecurityFilter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.ecommerce.ecommerce.infra.security;
+&nbsp;
+&nbsp;
+&nbsp;import com.ecommerce.ecommerce.entities.users.model.User;
+&nbsp;import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
+&nbsp;import jakarta.servlet.FilterChain;
+&nbsp;import jakarta.servlet.ServletException;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.servlet.http.HttpServletResponse;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+&nbsp;import org.springframework.security.core.authority.SimpleGrantedAuthority;
+&nbsp;import org.springframework.security.core.context.SecurityContextHolder;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import org.springframework.web.filter.OncePerRequestFilter;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.Collections;
+&nbsp;
+&nbsp;@Component
+<b class="fc">&nbsp;public class SecurityFilter extends OncePerRequestFilter {</b>
+&nbsp;	@Autowired
+&nbsp;	private TokenServices tokenServices;
+&nbsp;	@Autowired
+&nbsp;	private UserRepository userRepository;
+&nbsp;
+&nbsp;	@Override
+&nbsp;	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+&nbsp;
+<b class="fc">&nbsp;		String token = this.recoverToken(request);</b>
+<b class="fc">&nbsp;		String login = tokenServices.validateToken(token);</b>
+&nbsp;
+<b class="fc">&nbsp;		if (login != null) {</b>
+<b class="fc">&nbsp;			User user = userRepository.findByEmail(login).orElseThrow(() -&gt; new RuntimeException(&quot;User not found&quot;));</b>
+&nbsp;
+<b class="fc">&nbsp;			var authorities = Collections.singletonList(new SimpleGrantedAuthority(&quot;ROLE_USER&quot;)); // Criar coleção de roles</b>
+<b class="fc">&nbsp;			var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities); // Busca autenticação e destribui na aplicação</b>
+<b class="fc">&nbsp;			SecurityContextHolder.getContext().setAuthentication(authentication); // Inclui autenticação na aplicação</b>
+&nbsp;		}
+<b class="fc">&nbsp;		filterChain.doFilter(request, response);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String recoverToken(HttpServletRequest request) {
+<b class="fc">&nbsp;		var authHeader = request.getHeader(&quot;Authorization&quot;);</b>
+<b class="fc">&nbsp;		if (authHeader == null) return null;</b>
+<b class="fc">&nbsp;		return authHeader.replace(&quot;Bearer &quot;, &quot;&quot;);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-15 21:58</div>
+</div>
+</body>
+</html>

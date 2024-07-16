@@ -1,0 +1,155 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > StockController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.ecommerce.ecommerce.entities.stock.controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: StockController (com.ecommerce.ecommerce.entities.stock.controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StockController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    28,6%
+  </span>
+  <span class="absValue">
+    (2/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (2/8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.ecommerce.ecommerce.entities.stock.controllers;
+&nbsp;
+&nbsp;import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockCreatedDTO;
+&nbsp;import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockIncreaseDTO;
+&nbsp;import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockViewedDTO;
+&nbsp;import com.ecommerce.ecommerce.entities.stock.services.StockService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/stocks&quot;)
+<b class="fc">&nbsp;public class StockController {</b>
+&nbsp;
+&nbsp;	@Autowired
+&nbsp;	private StockService stockService;
+&nbsp;
+&nbsp;	@PostMapping
+&nbsp;	public ResponseEntity&lt;ItemStockCreatedDTO&gt; createOne(@RequestBody ItemStockCreatedDTO item) {
+<b class="fc">&nbsp;		return new ResponseEntity&lt;ItemStockCreatedDTO&gt;(stockService.create(item), HttpStatus.CREATED);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@PutMapping(&quot;/{id}&quot;)
+&nbsp;	public ResponseEntity&lt;ItemStockCreatedDTO&gt; updateById(@PathVariable String id, @RequestBody ItemStockCreatedDTO stockDetails) {
+<b class="nc">&nbsp;		return ResponseEntity.ok(stockService.update(id, stockDetails));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@PatchMapping(&quot;/increase-decrease&quot;)
+&nbsp;	public ResponseEntity&lt;ItemStockIncreaseDTO&gt; selectIncreaseOrDecreaseProduct(@RequestBody ItemStockIncreaseDTO item) {
+<b class="nc">&nbsp;		return ResponseEntity.ok(stockService.selectIncreaseOrDecreaseProduct(item));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@DeleteMapping(&quot;/{id}&quot;)
+&nbsp;	public ResponseEntity&lt;Void&gt; deleteById(@PathVariable String id) {
+<b class="nc">&nbsp;		stockService.delete(id);</b>
+<b class="nc">&nbsp;		return ResponseEntity.noContent().build();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@GetMapping
+&nbsp;	public ResponseEntity&lt;List&lt;ItemStockViewedDTO&gt;&gt; findAll() {
+<b class="nc">&nbsp;		return ResponseEntity.ok().body(stockService.findAll());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@GetMapping(&quot;/{id}&quot;)
+&nbsp;	public ResponseEntity&lt;ItemStockViewedDTO&gt; findOneById(@PathVariable String id) {
+<b class="nc">&nbsp;		return ResponseEntity.ok().body(stockService.findById(id));</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-15 21:58</div>
+</div>
+</body>
+</html>

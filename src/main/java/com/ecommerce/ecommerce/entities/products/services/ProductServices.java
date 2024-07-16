@@ -7,6 +7,7 @@ import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
 import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
+import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
 import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +27,10 @@ import java.util.stream.Collectors;
 public class ProductServices {
 	@Autowired
 	private ProductRepository productRepository;
+
+	@Autowired
+	private StockRepository stockRepository;
+
 	@Autowired
 	private ImageProductRepository imageProductRepository;
 
@@ -93,7 +98,8 @@ public class ProductServices {
 
 	public void deleteById(String id) {
 		validateIfProductNotExistsById(id);
-		this.productRepository.deleteById(id);
+		productRepository.deleteById(id);
+		stockRepository.deleteByProductsId(id);
 	}
 
 	private ProductViewedDTO convertModelToProductViewedDTO(Product product) {
