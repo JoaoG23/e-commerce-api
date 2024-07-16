@@ -1,6 +1,5 @@
 package com.ecommerce.ecommerce.entities.stock.controllers;
 
-import com.ecommerce.ecommerce.entities.products.dtos.ProductViewedDTO;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockCreatedDTO;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockIncreaseDTO;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockViewedDTO;
@@ -13,8 +12,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/stocks")
@@ -32,6 +29,8 @@ public class StockController {
 	public ResponseEntity<ItemStockIncreaseDTO> selectIncreaseOrDecreaseProduct(@RequestBody ItemStockIncreaseDTO item) {
 		return ResponseEntity.ok(stockService.selectIncreaseOrDecreaseProduct(item));
 	}
+
+
 
 	@GetMapping("page")
 	public ResponseEntity<Page<ItemStockViewedDTO>> findAllByPage(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {

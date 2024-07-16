@@ -34,21 +34,26 @@ public class ProductServices {
 	@Autowired
 	private ImageProductRepository imageProductRepository;
 
-	@Transactional
 	public Product create(ProductCreatedDTO productDTO) {
 		Product product = new Product();
 
 		BeanUtils.copyProperties(productDTO, product);
 		Product productCreated = this.productRepository.save(product);
-		String idProduct = productCreated.getId();
 
+		return this.createImagesProduct(productCreated, productDTO);
+	}
+
+
+	@Transactional
+	public Product createImagesProduct(Product product, ProductCreatedDTO productDTO) {
+
+		String idProduct = product.getId();
 		var images = new ArrayList<ImageProductCreatedDTO>(productDTO.imageProduct());
-		Boolean isNotHaveImages = productDTO.imageProduct().isEmpty();
 
+		Boolean isNotHaveImages = productDTO.imageProduct().isEmpty();
 		if (isNotHaveImages) {
 			return product;
 		}
-
 		images.forEach(image -> {
 			ImageProductCreatedDTO imageWithIdProduct = new ImageProductCreatedDTO(null, image.getPath(), idProduct);
 			ImageProduct imageProduct = new ImageProduct();
@@ -96,10 +101,11 @@ public class ProductServices {
 		return convertModelToProductViewedDTO(product);
 	}
 
+	@Transactional
 	public void deleteById(String id) {
 		validateIfProductNotExistsById(id);
-		productRepository.deleteById(id);
 		stockRepository.deleteByProductsId(id);
+		productRepository.deleteById(id);
 	}
 
 	private ProductViewedDTO convertModelToProductViewedDTO(Product product) {

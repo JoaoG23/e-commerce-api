@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ public class StockService {
 	@Autowired
 	private ProductRepository productRepository;
 
+	@Transactional
 	public ItemStockCreatedDTO create(ItemStockCreatedDTO itemDto) {
 		var productFound = productRepository.findById(itemDto.productId()).orElseThrow(() -> new NotFoundCustomException("Product not found"));
 
@@ -38,6 +40,7 @@ public class StockService {
 		return itemDto;
 	}
 
+	@Transactional
 	public ItemStockIncreaseDTO selectIncreaseOrDecreaseProduct(ItemStockIncreaseDTO itemDto) {
 		if (itemDto.increase()) {
 			return increaseQuantityProduct(itemDto);
@@ -45,6 +48,7 @@ public class StockService {
 		return decreaseQuantityProduct(itemDto);
 	}
 
+	@Transactional
 	private ItemStockIncreaseDTO increaseQuantityProduct(ItemStockIncreaseDTO itemDto) {
 		List<Stock> itemFound = stockRepository.findByProductsId(itemDto.productId());
 		if (itemFound.isEmpty()) {
@@ -67,6 +71,7 @@ public class StockService {
 		return itemDto;
 	}
 
+	@Transactional
 	private ItemStockIncreaseDTO decreaseQuantityProduct(ItemStockIncreaseDTO itemDto) {
 		List<Stock> itemFound = stockRepository.findByProductsId(itemDto.productId());
 		if (itemFound.isEmpty()) {
@@ -94,9 +99,12 @@ public class StockService {
 	}
 
 	public ItemStockViewedDTO findByProductId(String productId) {
-		Stock stockModel = stockRepository.findByProductsId(productId).get(0);
-		return convertModelToDtoViewed(stockModel);
+		List<Stock> stockItem = stockRepository.findByProductsId(productId);
+		if (stockItem.size() == 0) throw new NotFoundCustomException("Item not found");
+		Stock stock = stockItem.get(0);
+		return convertModelToDtoViewed(stock);
 	}
+
 
 	public Page<ItemStockViewedDTO> findAllByPage(Pageable pageable) {
 		Page<Stock> pages = stockRepository.findAll(pageable);

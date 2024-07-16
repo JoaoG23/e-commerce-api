@@ -48,7 +48,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (10/10)
+    (11/11)
   </span>
 </td>
 <td class="coverageStat">
@@ -61,10 +61,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    97,8%
+    97,9%
   </span>
   <span class="absValue">
-    (45/46)
+    (47/48)
   </span>
 </td>
 </tr>
@@ -78,7 +78,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (10/10)
+    (11/11)
   </span>
 </td>
 <td class="coverageStat">
@@ -91,10 +91,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    97,8%
+    97,9%
   </span>
   <span class="absValue">
-    (45/46)
+    (47/48)
   </span>
 </td>
 </tr>
@@ -114,6 +114,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
 &nbsp;import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 &nbsp;import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
+&nbsp;import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
 &nbsp;import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 &nbsp;import jakarta.transaction.Transactional;
 &nbsp;import org.springframework.beans.BeanUtils;
@@ -133,24 +134,33 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;public class ProductServices {</b>
 &nbsp;	@Autowired
 &nbsp;	private ProductRepository productRepository;
+&nbsp;
+&nbsp;	@Autowired
+&nbsp;	private StockRepository stockRepository;
+&nbsp;
 &nbsp;	@Autowired
 &nbsp;	private ImageProductRepository imageProductRepository;
 &nbsp;
-&nbsp;	@Transactional
 &nbsp;	public Product create(ProductCreatedDTO productDTO) {
 <b class="fc">&nbsp;		Product product = new Product();</b>
 &nbsp;
 <b class="fc">&nbsp;		BeanUtils.copyProperties(productDTO, product);</b>
 <b class="fc">&nbsp;		Product productCreated = this.productRepository.save(product);</b>
-<b class="fc">&nbsp;		String idProduct = productCreated.getId();</b>
 &nbsp;
+<b class="fc">&nbsp;		return this.createImagesProduct(productCreated, productDTO);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;	@Transactional
+&nbsp;	public Product createImagesProduct(Product product, ProductCreatedDTO productDTO) {
+&nbsp;
+<b class="fc">&nbsp;		String idProduct = product.getId();</b>
 <b class="fc">&nbsp;		var images = new ArrayList&lt;ImageProductCreatedDTO&gt;(productDTO.imageProduct());</b>
-<b class="fc">&nbsp;		Boolean isNotHaveImages = productDTO.imageProduct().isEmpty();</b>
 &nbsp;
+<b class="fc">&nbsp;		Boolean isNotHaveImages = productDTO.imageProduct().isEmpty();</b>
 <b class="fc">&nbsp;		if (isNotHaveImages) {</b>
 <b class="fc">&nbsp;			return product;</b>
 &nbsp;		}
-&nbsp;
 <b class="fc">&nbsp;		images.forEach(image -&gt; {</b>
 <b class="fc">&nbsp;			ImageProductCreatedDTO imageWithIdProduct = new ImageProductCreatedDTO(null, image.getPath(), idProduct);</b>
 <b class="fc">&nbsp;			ImageProduct imageProduct = new ImageProduct();</b>
@@ -198,9 +208,11 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;		return convertModelToProductViewedDTO(product);</b>
 &nbsp;	}
 &nbsp;
+&nbsp;	@Transactional
 &nbsp;	public void deleteById(String id) {
 <b class="fc">&nbsp;		validateIfProductNotExistsById(id);</b>
-<b class="fc">&nbsp;		this.productRepository.deleteById(id);</b>
+<b class="fc">&nbsp;		stockRepository.deleteByProductsId(id);</b>
+<b class="fc">&nbsp;		productRepository.deleteById(id);</b>
 &nbsp;	}
 &nbsp;
 &nbsp;	private ProductViewedDTO convertModelToProductViewedDTO(Product product) {
@@ -245,7 +257,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-07-15 21:58</div>
+    <div style="float:right;">generated on 2024-07-16 16:05</div>
 </div>
 </body>
 </html>
