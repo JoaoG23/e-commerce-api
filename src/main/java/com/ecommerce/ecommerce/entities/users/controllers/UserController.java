@@ -17,7 +17,7 @@ public class UserController {
 //	@PutMapping("/{id}")
 //	public ResponseEntity<String> updateById(@PathVariable(value = "id") Long id, @RequestBody @Valid UserCreatedDTO userDTO) {
 //
-//		UserModel userModel = new UserModel();
+//		User userModel = new User();
 //		BeanUtils.copyProperties(userDTO, userModel);
 //
 //		String response = userServices.updateById(id, userModel);

@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerce.infra.security;
 
 
-import com.ecommerce.ecommerce.entities.users.model.UserModel;
+import com.ecommerce.ecommerce.entities.users.model.User;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -31,7 +31,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 		String login = tokenServices.validateToken(token);
 
 		if (login != null) {
-			UserModel user = userRepository.findByEmail(login).orElseThrow(() -> new RuntimeException("User not found"));
+			User user = userRepository.findByEmail(login).orElseThrow(() -> new RuntimeException("User not found"));
 
 			var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")); // Criar coleção de roles
 			var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities); // Busca autenticação e destribui na aplicação

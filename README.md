@@ -2,8 +2,8 @@
 
 # Application E-Commerce API 🏪👜
 
-API of e-commerce 🤰🏽in construction....
-
+API small e-commerce 🤰🏽in construction....
+electronic commerce, is a system of buying and selling products or services over the internet. It is a business model that has become very popular due to its convenience and efficiency.
 ## Technologies Used 🪄
 
   [![Insomnia](https://img.shields.io/badge/Insomnia-5849BE?style=for-the-badge&logo=insomnia&logoColor=white)](https://insomnia.rest/)
@@ -16,6 +16,63 @@ API of e-commerce 🤰🏽in construction....
   [![JWT Tokens](https://img.shields.io/badge/JWT%20Tokens-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://jwt.io/)
   [![Spring Data JPA](https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-data-jpa)
   [![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-security)
+
+## Requirements & Entities
+**Employee**: User responsible for creating and managing the store, stock, cash flow, adding products, etc., as well as getting, separating, and sending orders with products.
+
+**Customer**: User responsible for buying products from the store.
+They need to register to look at items in the store.
+
+**Products**: Items shown to customers for purchase.
+
+**Stock**: Where products are managed and counted. When products are bought, the quantity is decreased from the stock.
+
+**Order**: Contains all information about cart items after purchase.
+
+### To-Do Tasks
+- **Products**
+    - [x]  Employee can create a product
+        - [x]  When creating, the system automatically creates images
+        - [x]  When creating, the system automatically creates product data in stock
+    - [x]  Employee can delete a product
+        - [x]  When deleting, the system automatically removes product images
+        - [x]  When deleting, the system automatically removes product data from stock
+    - [x]  All users can list a product
+    - [x]  All users can list all products by page
+    - [x]  Employee can update a product
+- **Product Images**
+    - [x]  Employee can create a picture for a product
+    - [x]  Employee can delete a picture
+    - [x]  Employee can list a picture
+- **Stock Product (Future Integration)**
+    - [x]  Employee can create product data in stock
+    - [x]  Employee can increase product quantity in stock
+    - [x]  Employee can decrease product quantity in stock
+        - [x]  When decreasing, the system should allow only positive values in the stock item
+    - [x]  Employee can get all product quantities by page in stock
+    - [x]  Employee can get one product quantity in stock
+- **Employee (User with Role EMPLOYEE)**
+    - [ ]  Employee can delete themselves
+    - [ ]  Employee can create other employees
+    - [ ]  System can add the role EMPLOYEE
+    - [ ]  Employee can get their own data
+    - [ ]  Employee can update their own data
+- **Customer (User with Role CUSTOMER)**
+    - [ ]  Customer can delete themselves
+    - [ ]  System can add the role CUSTOMER
+    - [ ]  Customer can get their own data
+    - [ ]  Customer can update their own data
+    - [ ]  Customer can generate an order after payment
+- **Order**
+    - [ ]  Customer can create an order
+        - [ ]  All orders should have one or more items
+    - [ ]  Customer can delete their order
+    - [ ]  Customer can get their order data
+- **Order Items**
+    - [ ]  Customer can have order items
+- **Authentication**
+    - [ ]  All users can log in
+    - [ ]  Customers can register
 
 ## How to Install 🔑
 

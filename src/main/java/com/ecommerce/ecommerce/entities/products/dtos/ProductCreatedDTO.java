@@ -1,22 +1,17 @@
 package com.ecommerce.ecommerce.entities.products.dtos;
 
-import jakarta.validation.constraints.NotEmpty;
+import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.UUID;
+import java.util.List;
 
-@Data
-public class ProductCreatedDTO {
-
-	public UUID id;
-	@NotEmpty
-	public String name;
-	@NotEmpty
-	public BigDecimal price;
-	@NotNull
-	public String details;
-	@NotEmpty
-	public String telephone;
+public record ProductCreatedDTO(
+		String id,
+		@NotBlank(message = "Name is mandatory") String name,
+		@NotNull(message = "Price is mandatory") BigDecimal price,
+		@NotBlank(message = "Details is mandatory") String details,
+		List<ImageProductCreatedDTO> imageProduct
+) {
 }

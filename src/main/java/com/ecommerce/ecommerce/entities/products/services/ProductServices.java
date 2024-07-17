@@ -1,9 +1,15 @@
 package com.ecommerce.ecommerce.entities.products.services;
 
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
+import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedWithStockDTO;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductViewedDTO;
-import com.ecommerce.ecommerce.entities.products.model.ProductModel;
+import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
+import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
+import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
+import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
+import com.ecommerce.ecommerce.entities.stock.model.Stock;
+import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
 import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -16,7 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -24,32 +30,96 @@ public class ProductServices {
 	@Autowired
 	private ProductRepository productRepository;
 
-	@Transactional
-	public ProductModel create(ProductCreatedDTO productDTO) {
+	@Autowired
+	private StockRepository stockRepository;
 
-		ProductModel productModel = new ProductModel();
-		BeanUtils.copyProperties(productDTO, productModel);
-		return productRepository.save(productModel);
+	@Autowired
+	private ImageProductRepository imageProductRepository;
+
+	@Transactional
+	public Product create(ProductCreatedDTO productDTO) {
+		Product product = new Product();
+
+		BeanUtils.copyProperties(productDTO, product);
+		Product productCreated = this.productRepository.save(product);
+
+		return this.createImagesProduct(productCreated, productDTO);
 	}
 
+
 	@Transactional
-	public void updateById(UUID id, ProductCreatedDTO productDTO) {
+	public Product createWithStock(ProductCreatedWithStockDTO productDTO) {
+		Product product = new Product();
 
+		BeanUtils.copyProperties(productDTO, product);
+		Product productCreated = this.productRepository.save(product);
+
+		Stock stock = new Stock();
+		BeanUtils.copyProperties(productDTO.stock(), stock);
+		stock.setProduct(productCreated);
+		stockRepository.save(stock);
+
+		return this.createImagesStockProduct(productCreated, productDTO);
+	}
+
+
+	@Transactional
+	public Product createImagesProduct(Product product, ProductCreatedDTO productDTO) {
+
+		String idProduct = product.getId();
+		var images = new ArrayList<ImageProductCreatedDTO>(productDTO.imageProduct());
+
+		Boolean isNotHaveImages = productDTO.imageProduct().isEmpty();
+		if (isNotHaveImages) {
+			return product;
+		}
+		images.forEach(image -> {
+			ImageProductCreatedDTO imageWithIdProduct = new ImageProductCreatedDTO(null, image.getPath(), idProduct);
+			ImageProduct imageProduct = new ImageProduct();
+
+			BeanUtils.copyProperties(imageWithIdProduct, imageProduct);
+			imageProduct.setProduct(product);
+
+			this.imageProductRepository.save(imageProduct);
+		});
+		return product;
+	}
+	@Transactional
+	public Product createImagesStockProduct(Product product, ProductCreatedWithStockDTO productDTO) {
+
+		String idProduct = product.getId();
+		var images = new ArrayList<ImageProductCreatedDTO>(productDTO.imageProduct());
+
+		Boolean isNotHaveImages = productDTO.imageProduct().isEmpty();
+		if (isNotHaveImages) {
+			return product;
+		}
+		images.forEach(image -> {
+			ImageProductCreatedDTO imageWithIdProduct = new ImageProductCreatedDTO(null, image.getPath(), idProduct);
+			ImageProduct imageProduct = new ImageProduct();
+
+			BeanUtils.copyProperties(imageWithIdProduct, imageProduct);
+			imageProduct.setProduct(product);
+
+			this.imageProductRepository.save(imageProduct);
+		});
+		return product;
+	}
+
+
+	@Transactional
+	public Product updateById(String id, ProductCreatedDTO productDTO) {
 		validateIfProductNotExistsById(id);
-
-		ProductModel productModel = new ProductModel();
-		productDTO.setId(id);
-		BeanUtils.copyProperties(productDTO, productModel);
-
-		productRepository.save(productModel);
+		Product product = new Product();
+		BeanUtils.copyProperties(productDTO, product);
+		product.setId(id);
+		return productRepository.save(product);
 	}
 
 	public List<ProductViewedDTO> findAll() {
-
-		List<ProductModel> products = productRepository.findAll();
+		List<Product> products = productRepository.findAll();
 		List<ProductViewedDTO> productDTOs = new ArrayList<>();
-
-		for (ProductModel product : products) {
+		for (Product product : products) {
 			ProductViewedDTO productDTO = convertModelToProductViewedDTO(product);
 			productDTOs.add(productDTO);
 		}
@@ -57,43 +127,40 @@ public class ProductServices {
 	}
 
 	public Page<ProductViewedDTO> findAllByPage(Pageable pageable) {
-		Page<ProductModel> pages = productRepository.findAll(pageable);
-
-		List<ProductViewedDTO> productDTOs = pages.getContent().stream()
-				.map(this::convertModelToProductViewedDTO)
-				.collect(Collectors.toList());
-
+		Page<Product> pages = productRepository.findAll(pageable);
+		List<ProductViewedDTO> productDTOs = pages.getContent().stream().map(this::convertModelToProductViewedDTO).collect(Collectors.toList());
 		return new PageImpl<>(productDTOs, pageable, pages.getTotalElements());
 	}
 
-	public ProductViewedDTO findById(UUID id) {
+	public ProductViewedDTO findById(String id) {
 		validateIfProductNotExistsById(id);
 
-		Optional<ProductModel> productModelOptional = productRepository.findById(id);
-		ProductModel productModel = productModelOptional.get();
-		return convertModelToProductViewedDTO(productModel);
+		Optional<Product> productModelOptional = productRepository.findById(id);
+		Product product = productModelOptional.get();
+		return convertModelToProductViewedDTO(product);
 	}
 
-	public void deleteById(UUID id) {
+	@Transactional
+	public void deleteById(String id) {
 		validateIfProductNotExistsById(id);
+		stockRepository.deleteByProductsId(id);
 		productRepository.deleteById(id);
 	}
 
-	private ProductViewedDTO convertModelToProductViewedDTO(ProductModel productModel) {
-		ProductViewedDTO productDTO = new ProductViewedDTO();
-
-		// Crie setter e getters com o nome do atributo
-
-		BeanUtils.copyProperties(productModel, productDTO);
-//		productDTO.setId(productModel.getId());
-//		productDTO.setName(productModel.getName());
-//		productDTO.setPrice(productModel.getPrice());
+	private ProductViewedDTO convertModelToProductViewedDTO(Product product) {
+		ProductViewedDTO productDTO = new ProductViewedDTO(
+				product.getId(),
+				product.getName(),
+				product.getPrice(),
+				product.getDetails(),
+				product.getImagesProduct()
+		);
 
 		return productDTO;
 	}
 
-	private void validateIfProductNotExistsById(UUID id) {
-		Optional<ProductModel> productFound = productRepository.findById(id);
+	private void validateIfProductNotExistsById(String id) {
+		Optional<Product> productFound = productRepository.findById(id);
 		if (productFound.isEmpty()) {
 			throw new NotFoundCustomException("Product not found with id: " + id);
 		}

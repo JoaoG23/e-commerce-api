@@ -1,0 +1,88 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > StockRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.ecommerce.ecommerce.entities.stock.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: StockRepository (com.ecommerce.ecommerce.entities.stock.repository)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">StockRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.ecommerce.ecommerce.entities.stock.repository;
+&nbsp;
+&nbsp;import com.ecommerce.ecommerce.entities.stock.model.Stock;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Modifying;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Repository
+&nbsp;public interface StockRepository extends JpaRepository&lt;Stock, String&gt; {
+&nbsp;	@Query(value = &quot;SELECT * FROM public.stock_products s WHERE s.products_id = :products_id&quot;, nativeQuery = true)
+&nbsp;	List&lt;Stock&gt; findByProductsId(@Param(&quot;products_id&quot;) String productId);
+&nbsp;
+&nbsp;	@Modifying
+&nbsp;	@Query(value = &quot;DELETE FROM public.stock_products p WHERE p.products_id =:products_id&quot;, nativeQuery = true)
+&nbsp;	void deleteByProductsId(@Param(&quot;products_id&quot;) String productId);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-17 09:48</div>
+</div>
+</body>
+</html>
