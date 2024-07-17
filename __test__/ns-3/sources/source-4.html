@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
-  <title>Coverage Report > AuthResponseDTO</title>
+  <title>Coverage Report > ProductViewedDTO</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -19,10 +19,10 @@
 <div class="breadCrumbs">
 Current scope:     <a href="../../index.html">all classes</a>
     <span class="separator">|</span>
-    <a href="../index.html">com.ecommerce.ecommerce.entities.users.authentication.dtos</a>
+    <a href="../index.html">com.ecommerce.ecommerce.entities.products.dtos</a>
 </div>
 
-<h1>Coverage Summary for Class: AuthResponseDTO (com.ecommerce.ecommerce.entities.users.authentication.dtos)</h1>
+<h1>Coverage Summary for Class: ProductViewedDTO (com.ecommerce.ecommerce.entities.products.dtos)</h1>
 
 <table class="coverageStats">
 <tr>
@@ -41,7 +41,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 </th>
 </tr>
 <tr>
-  <td class="name">AuthResponseDTO</td>
+  <td class="name">ProductViewedDTO</td>
 <td class="coverageStat">
   <span class="percent">
     100%
@@ -75,9 +75,21 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;package com.ecommerce.ecommerce.entities.users.authentication.dtos;
+<code class="sourceCode" id="sourceCode">&nbsp;package com.ecommerce.ecommerce.entities.products.dtos;
 &nbsp;
-<b class="fc">&nbsp;public record AuthResponseDTO (String token) {}</b>
+&nbsp;import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;public record ProductViewedDTO(</b>
+&nbsp;		String id,
+&nbsp;		String name,
+&nbsp;		BigDecimal price,
+&nbsp;		String details,
+&nbsp;		List&lt;ImageProduct&gt; imagesProduct) {
+&nbsp;}
 </code>
 </pre>
 </div>

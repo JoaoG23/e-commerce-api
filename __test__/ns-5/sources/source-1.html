@@ -45,26 +45,26 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">ProductServices</td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    78,6%
   </span>
   <span class="absValue">
-    (11/11)
+    (11/14)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    83,3%
+    62,5%
   </span>
   <span class="absValue">
-    (5/6)
+    (5/8)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    97,9%
+    69,1%
   </span>
   <span class="absValue">
-    (47/48)
+    (47/68)
   </span>
 </td>
 </tr>
@@ -75,26 +75,26 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name"><strong>Total</strong></td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    78,6%
   </span>
   <span class="absValue">
-    (11/11)
+    (11/14)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    83,3%
+    62,5%
   </span>
   <span class="absValue">
-    (5/6)
+    (5/8)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    97,9%
+    69,1%
   </span>
   <span class="absValue">
-    (47/48)
+    (47/68)
   </span>
 </td>
 </tr>
@@ -108,12 +108,14 @@ Current scope:     <a href="../../index.html">all classes</a>
 <code class="sourceCode" id="sourceCode">&nbsp;package com.ecommerce.ecommerce.entities.products.services;
 &nbsp;
 &nbsp;import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
+&nbsp;import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedWithStockDTO;
 &nbsp;import com.ecommerce.ecommerce.entities.products.dtos.ProductViewedDTO;
 &nbsp;import com.ecommerce.ecommerce.entities.products.model.Product;
 &nbsp;import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
 &nbsp;import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
 &nbsp;import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 &nbsp;import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
+&nbsp;import com.ecommerce.ecommerce.entities.stock.model.Stock;
 &nbsp;import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
 &nbsp;import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 &nbsp;import jakarta.transaction.Transactional;
@@ -141,6 +143,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;	@Autowired
 &nbsp;	private ImageProductRepository imageProductRepository;
 &nbsp;
+&nbsp;	@Transactional
 &nbsp;	public Product create(ProductCreatedDTO productDTO) {
 <b class="fc">&nbsp;		Product product = new Product();</b>
 &nbsp;
@@ -148,6 +151,22 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;		Product productCreated = this.productRepository.save(product);</b>
 &nbsp;
 <b class="fc">&nbsp;		return this.createImagesProduct(productCreated, productDTO);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;	@Transactional
+&nbsp;	public Product createWithStock(ProductCreatedWithStockDTO productDTO) {
+<b class="nc">&nbsp;		Product product = new Product();</b>
+&nbsp;
+<b class="nc">&nbsp;		BeanUtils.copyProperties(productDTO, product);</b>
+<b class="nc">&nbsp;		Product productCreated = this.productRepository.save(product);</b>
+&nbsp;
+<b class="nc">&nbsp;		Stock stock = new Stock();</b>
+<b class="nc">&nbsp;		BeanUtils.copyProperties(productDTO.stock(), stock);</b>
+<b class="nc">&nbsp;		stock.setProduct(productCreated);</b>
+<b class="nc">&nbsp;		stockRepository.save(stock);</b>
+&nbsp;
+<b class="nc">&nbsp;		return this.createImagesStockProduct(productCreated, productDTO);</b>
 &nbsp;	}
 &nbsp;
 &nbsp;
@@ -172,6 +191,27 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;		});
 <b class="fc">&nbsp;		return product;</b>
 &nbsp;	}
+&nbsp;	@Transactional
+&nbsp;	public Product createImagesStockProduct(Product product, ProductCreatedWithStockDTO productDTO) {
+&nbsp;
+<b class="nc">&nbsp;		String idProduct = product.getId();</b>
+<b class="nc">&nbsp;		var images = new ArrayList&lt;ImageProductCreatedDTO&gt;(productDTO.imageProduct());</b>
+&nbsp;
+<b class="nc">&nbsp;		Boolean isNotHaveImages = productDTO.imageProduct().isEmpty();</b>
+<b class="nc">&nbsp;		if (isNotHaveImages) {</b>
+<b class="nc">&nbsp;			return product;</b>
+&nbsp;		}
+<b class="nc">&nbsp;		images.forEach(image -&gt; {</b>
+<b class="nc">&nbsp;			ImageProductCreatedDTO imageWithIdProduct = new ImageProductCreatedDTO(null, image.getPath(), idProduct);</b>
+<b class="nc">&nbsp;			ImageProduct imageProduct = new ImageProduct();</b>
+&nbsp;
+<b class="nc">&nbsp;			BeanUtils.copyProperties(imageWithIdProduct, imageProduct);</b>
+<b class="nc">&nbsp;			imageProduct.setProduct(product);</b>
+&nbsp;
+<b class="nc">&nbsp;			this.imageProductRepository.save(imageProduct);</b>
+&nbsp;		});
+<b class="nc">&nbsp;		return product;</b>
+&nbsp;	}
 &nbsp;
 &nbsp;
 &nbsp;	@Transactional
@@ -195,7 +235,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;	public Page&lt;ProductViewedDTO&gt; findAllByPage(Pageable pageable) {
 <b class="fc">&nbsp;		Page&lt;Product&gt; pages = productRepository.findAll(pageable);</b>
-&nbsp;
 <b class="fc">&nbsp;		List&lt;ProductViewedDTO&gt; productDTOs = pages.getContent().stream().map(this::convertModelToProductViewedDTO).collect(Collectors.toList());</b>
 <b class="fc">&nbsp;		return new PageImpl&lt;&gt;(productDTOs, pageable, pages.getTotalElements());</b>
 &nbsp;	}
@@ -257,7 +296,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-07-16 16:05</div>
+    <div style="float:right;">generated on 2024-07-17 09:48</div>
 </div>
 </body>
 </html>

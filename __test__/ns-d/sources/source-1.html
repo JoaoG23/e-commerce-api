@@ -45,26 +45,26 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">StockService</td>
 <td class="coverageStat">
   <span class="percent">
-    25%
+    100%
   </span>
   <span class="absValue">
-    (2/8)
+    (8/8)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    70%
   </span>
   <span class="absValue">
-    (0/10)
+    (7/10)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    15,4%
+    96,2%
   </span>
   <span class="absValue">
-    (8/52)
+    (50/52)
   </span>
 </td>
 </tr>
@@ -75,26 +75,26 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name"><strong>Total</strong></td>
 <td class="coverageStat">
   <span class="percent">
-    25%
+    100%
   </span>
   <span class="absValue">
-    (2/8)
+    (8/8)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    70%
   </span>
   <span class="absValue">
-    (0/10)
+    (7/10)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    15,4%
+    96,2%
   </span>
   <span class="absValue">
-    (8/52)
+    (50/52)
   </span>
 </td>
 </tr>
@@ -149,84 +149,84 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;	@Transactional
 &nbsp;	public ItemStockIncreaseDTO selectIncreaseOrDecreaseProduct(ItemStockIncreaseDTO itemDto) {
-<b class="nc">&nbsp;		if (itemDto.increase()) {</b>
-<b class="nc">&nbsp;			return increaseQuantityProduct(itemDto);</b>
+<b class="fc">&nbsp;		if (itemDto.increase()) {</b>
+<b class="fc">&nbsp;			return increaseQuantityProduct(itemDto);</b>
 &nbsp;		}
-<b class="nc">&nbsp;		return decreaseQuantityProduct(itemDto);</b>
+<b class="fc">&nbsp;		return decreaseQuantityProduct(itemDto);</b>
 &nbsp;	}
 &nbsp;
 &nbsp;	@Transactional
 &nbsp;	private ItemStockIncreaseDTO increaseQuantityProduct(ItemStockIncreaseDTO itemDto) {
-<b class="nc">&nbsp;		List&lt;Stock&gt; itemFound = stockRepository.findByProductsId(itemDto.productId());</b>
-<b class="nc">&nbsp;		if (itemFound.isEmpty()) {</b>
+<b class="fc">&nbsp;		List&lt;Stock&gt; itemFound = stockRepository.findByProductsId(itemDto.productId());</b>
+<b class="pc">&nbsp;		if (itemFound.isEmpty()) {</b>
 <b class="nc">&nbsp;			throw new NotFoundCustomException(&quot;Item not found&quot;);</b>
 &nbsp;		}
 &nbsp;
-<b class="nc">&nbsp;		Stock stockItem = itemFound.get(0);</b>
-<b class="nc">&nbsp;		Stock item = new Stock();</b>
+<b class="fc">&nbsp;		Stock stockItem = itemFound.get(0);</b>
+<b class="fc">&nbsp;		Stock item = new Stock();</b>
 &nbsp;
-<b class="nc">&nbsp;		int newQuantity = stockItem.getQuantity() + itemDto.quantity();</b>
+<b class="fc">&nbsp;		int newQuantity = stockItem.getQuantity() + itemDto.quantity();</b>
 &nbsp;
-<b class="nc">&nbsp;		stockItem.setQuantity(newQuantity);</b>
+<b class="fc">&nbsp;		stockItem.setQuantity(newQuantity);</b>
 &nbsp;
-<b class="nc">&nbsp;		item.setProduct(productRepository.findById(itemDto.productId()).orElseThrow(() -&gt; new NotFoundCustomException(&quot;Product not found&quot;)));</b>
-<b class="nc">&nbsp;		item.setQuantity(stockItem.getQuantity());</b>
-<b class="nc">&nbsp;		item.setLotPrice(Double.valueOf(stockItem.getLotPrice()));</b>
-<b class="nc">&nbsp;		item.setId(stockItem.getId());</b>
+<b class="fc">&nbsp;		item.setProduct(productRepository.findById(itemDto.productId()).orElseThrow(() -&gt; new NotFoundCustomException(&quot;Product not found&quot;)));</b>
+<b class="fc">&nbsp;		item.setQuantity(stockItem.getQuantity());</b>
+<b class="fc">&nbsp;		item.setLotPrice(Double.valueOf(stockItem.getLotPrice()));</b>
+<b class="fc">&nbsp;		item.setId(stockItem.getId());</b>
 &nbsp;
-<b class="nc">&nbsp;		stockRepository.save(item);</b>
-<b class="nc">&nbsp;		return itemDto;</b>
+<b class="fc">&nbsp;		stockRepository.save(item);</b>
+<b class="fc">&nbsp;		return itemDto;</b>
 &nbsp;	}
 &nbsp;
 &nbsp;	@Transactional
 &nbsp;	private ItemStockIncreaseDTO decreaseQuantityProduct(ItemStockIncreaseDTO itemDto) {
-<b class="nc">&nbsp;		List&lt;Stock&gt; itemFound = stockRepository.findByProductsId(itemDto.productId());</b>
-<b class="nc">&nbsp;		if (itemFound.isEmpty()) {</b>
+<b class="fc">&nbsp;		List&lt;Stock&gt; itemFound = stockRepository.findByProductsId(itemDto.productId());</b>
+<b class="pc">&nbsp;		if (itemFound.isEmpty()) {</b>
 <b class="nc">&nbsp;			throw new NotFoundCustomException(&quot;Item not found&quot;);</b>
 &nbsp;		}
 &nbsp;
-<b class="nc">&nbsp;		Stock stockItem = itemFound.get(0);</b>
+<b class="fc">&nbsp;		Stock stockItem = itemFound.get(0);</b>
 &nbsp;
-<b class="nc">&nbsp;		int newQuantity = stockItem.getQuantity() - itemDto.quantity();</b>
+<b class="fc">&nbsp;		int newQuantity = stockItem.getQuantity() - itemDto.quantity();</b>
 &nbsp;
-<b class="nc">&nbsp;		if (newQuantity &lt; 0) {</b>
-<b class="nc">&nbsp;			throw new CustomException(&quot;Don&#39;t have enough quantity in stock for decrease! Current quantity:&quot; + stockItem.getQuantity());</b>
+<b class="fc">&nbsp;		if (newQuantity &lt; 0) {</b>
+<b class="fc">&nbsp;			throw new CustomException(&quot;Don&#39;t have enough quantity in stock for decrease! Current quantity:&quot; + stockItem.getQuantity());</b>
 &nbsp;		}
 &nbsp;
-<b class="nc">&nbsp;		stockItem.setQuantity(newQuantity);</b>
+<b class="fc">&nbsp;		stockItem.setQuantity(newQuantity);</b>
 &nbsp;
-<b class="nc">&nbsp;		Stock item = new Stock();</b>
-<b class="nc">&nbsp;		item.setProduct(productRepository.findById(itemDto.productId()).orElseThrow(() -&gt; new NotFoundCustomException(&quot;Product not found&quot;)));</b>
-<b class="nc">&nbsp;		item.setQuantity(stockItem.getQuantity());</b>
-<b class="nc">&nbsp;		item.setLotPrice(Double.valueOf(stockItem.getLotPrice()));</b>
-<b class="nc">&nbsp;		item.setId(stockItem.getId());</b>
+<b class="fc">&nbsp;		Stock item = new Stock();</b>
+<b class="fc">&nbsp;		item.setProduct(productRepository.findById(itemDto.productId()).orElseThrow(() -&gt; new NotFoundCustomException(&quot;Product not found&quot;)));</b>
+<b class="fc">&nbsp;		item.setQuantity(stockItem.getQuantity());</b>
+<b class="fc">&nbsp;		item.setLotPrice(Double.valueOf(stockItem.getLotPrice()));</b>
+<b class="fc">&nbsp;		item.setId(stockItem.getId());</b>
 &nbsp;
-<b class="nc">&nbsp;		stockRepository.save(item);</b>
-<b class="nc">&nbsp;		return itemDto;</b>
+<b class="fc">&nbsp;		stockRepository.save(item);</b>
+<b class="fc">&nbsp;		return itemDto;</b>
 &nbsp;	}
 &nbsp;
 &nbsp;	public ItemStockViewedDTO findByProductId(String productId) {
-<b class="nc">&nbsp;		List&lt;Stock&gt; stockItem = stockRepository.findByProductsId(productId);</b>
-<b class="nc">&nbsp;		if (stockItem.size() == 0) throw new NotFoundCustomException(&quot;Item not found&quot;);</b>
-<b class="nc">&nbsp;		Stock stock = stockItem.get(0);</b>
-<b class="nc">&nbsp;		return convertModelToDtoViewed(stock);</b>
+<b class="fc">&nbsp;		List&lt;Stock&gt; stockItem = stockRepository.findByProductsId(productId);</b>
+<b class="pc">&nbsp;		if (stockItem.size() == 0) throw new NotFoundCustomException(&quot;Item not found&quot;);</b>
+<b class="fc">&nbsp;		Stock stock = stockItem.get(0);</b>
+<b class="fc">&nbsp;		return convertModelToDtoViewed(stock);</b>
 &nbsp;	}
 &nbsp;
 &nbsp;
 &nbsp;	public Page&lt;ItemStockViewedDTO&gt; findAllByPage(Pageable pageable) {
-<b class="nc">&nbsp;		Page&lt;Stock&gt; pages = stockRepository.findAll(pageable);</b>
-<b class="nc">&nbsp;		List&lt;ItemStockViewedDTO&gt; productDTOs = pages.getContent().stream().map(this::convertModelToDtoViewed).collect(Collectors.toList());</b>
-<b class="nc">&nbsp;		return new PageImpl&lt;&gt;(productDTOs, pageable, pages.getTotalElements());</b>
+<b class="fc">&nbsp;		Page&lt;Stock&gt; pages = stockRepository.findAll(pageable);</b>
+<b class="fc">&nbsp;		List&lt;ItemStockViewedDTO&gt; productDTOs = pages.getContent().stream().map(this::convertModelToDtoViewed).collect(Collectors.toList());</b>
+<b class="fc">&nbsp;		return new PageImpl&lt;&gt;(productDTOs, pageable, pages.getTotalElements());</b>
 &nbsp;	}
 &nbsp;
 &nbsp;	private ItemStockViewedDTO convertModelToDtoViewed(Stock product) {
-<b class="nc">&nbsp;		ItemStockViewedDTO productDTO = new ItemStockViewedDTO(</b>
-<b class="nc">&nbsp;				product.getId(),</b>
-<b class="nc">&nbsp;				product.getProduct().getId(),</b>
-<b class="nc">&nbsp;				product.getQuantity(),</b>
-<b class="nc">&nbsp;				product.getLotPrice()</b>
+<b class="fc">&nbsp;		ItemStockViewedDTO productDTO = new ItemStockViewedDTO(</b>
+<b class="fc">&nbsp;				product.getId(),</b>
+<b class="fc">&nbsp;				product.getProduct().getId(),</b>
+<b class="fc">&nbsp;				product.getQuantity(),</b>
+<b class="fc">&nbsp;				product.getLotPrice()</b>
 &nbsp;		);
-<b class="nc">&nbsp;		return productDTO;</b>
+<b class="fc">&nbsp;		return productDTO;</b>
 &nbsp;	}
 &nbsp;}
 </code>
@@ -252,7 +252,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-07-16 16:05</div>
+    <div style="float:right;">generated on 2024-07-17 09:48</div>
 </div>
 </body>
 </html>
