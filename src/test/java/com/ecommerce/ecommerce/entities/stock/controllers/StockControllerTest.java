@@ -64,7 +64,6 @@ class StockControllerTest {
 		var getProduct = new JSONObject(product);
 		String productId = getProduct.getString("id");
 
-		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
 		ObjectMapper objectMapper = new ObjectMapper();
 		var stock = new ItemStockCreatedDTO(
 				null,
@@ -84,7 +83,7 @@ class StockControllerTest {
 
 	}
 	@Test
-	@DisplayName("Increase stock item by productId with success and return 200")
+	@DisplayName("Increase quantity stock item by productId with success and return 200")
 	void increaseProductCase1() throws Exception {
 		this.createUserInitial();
 
@@ -92,14 +91,12 @@ class StockControllerTest {
 		var getProduct = new JSONObject(product);
 		String productId = getProduct.getString("id");
 
-		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		String stockItem = this.createStockByProductId(productId);
-		var getStock = new JSONObject(stockItem);
 
 		var increased = new ItemStockIncreaseDTO(
-				false,
+				true,
 				1,
 				productId
 		);
@@ -111,24 +108,77 @@ class StockControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.productId").value(productId))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(increased.quantity()));
 	}
+	@Test
+	@DisplayName("Decrease quantity stock item by productId with success and return 200")
+	void decreaseProductCase1() throws Exception {
+		this.createUserInitial();
+
+		String product = this.createProduct();
+		var getProduct = new JSONObject(product);
+		String productId = getProduct.getString("id");
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		this.createStockByProductId(productId);
+
+		var quantity = new ItemStockIncreaseDTO(
+				false,
+				1,
+				productId
+		);
+		mockMvc.perform(MockMvcRequestBuilders.patch("/stocks/increase-decrease")
+						.contentType(MediaType.APPLICATION_JSON)
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
+						.content(objectMapper.writeValueAsString(quantity)))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.productId").value(productId))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(quantity.quantity()));
+	}
+	@Test
+	@DisplayName("Error to decrease quantity less than 0 in stock item with success and return 200")
+	void decreaseProductCase2() throws Exception {
+		this.createUserInitial();
+
+		String product = this.createProduct();
+		var getProduct = new JSONObject(product);
+		String productId = getProduct.getString("id");
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		this.createStockByProductId(productId);
 
 
-	//
-//	@Test
-//	@DisplayName("Find all by page and return success 200")
-//	void findByPageCase2() throws Exception {
-//		this.createUserInitial();
-//		this.createStock();
-//		this.createStock();
-//		mockMvc.perform(MockMvcRequestBuilders.get("/stocks/page")
-//						.param("page", "0")
-//						.param("size", "1")
-//						.param("sort", "id")
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(1));
-//	}
-//
+		var quantity = new ItemStockIncreaseDTO(
+				false,
+				2,
+				productId
+		);
+		mockMvc.perform(MockMvcRequestBuilders.patch("/stocks/increase-decrease")
+						.contentType(MediaType.APPLICATION_JSON)
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
+						.content(objectMapper.writeValueAsString(quantity)))
+				.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+	}
+
+
+	@Test
+	@DisplayName("Find all by page and return success 200")
+	void findByPageCase1() throws Exception {
+		String product = this.createProduct();
+		var getProduct = new JSONObject(product);
+		String productId = getProduct.getString("id");
+		 this.createStockByProductId(productId);
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/stocks/page")
+						.param("page", "0")
+						.param("size", "1")
+						.param("sort", "id")
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(1));
+	}
+
 	@Test
 	@DisplayName("Find one by productId and return success 200")
 	void findOneByIdCase1() throws Exception {
@@ -148,7 +198,6 @@ class StockControllerTest {
 		);
 
 		String stockItem = this.createStockByProductId(productId);
-		var getStock = new JSONObject(stockItem);
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/stocks/{productId}", productId)
 						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))

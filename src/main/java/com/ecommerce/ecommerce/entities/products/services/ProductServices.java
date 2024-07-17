@@ -128,7 +128,6 @@ public class ProductServices {
 
 	public Page<ProductViewedDTO> findAllByPage(Pageable pageable) {
 		Page<Product> pages = productRepository.findAll(pageable);
-
 		List<ProductViewedDTO> productDTOs = pages.getContent().stream().map(this::convertModelToProductViewedDTO).collect(Collectors.toList());
 		return new PageImpl<>(productDTOs, pageable, pages.getTotalElements());
 	}
