@@ -20,8 +20,7 @@ electronic commerce, is a system of buying and selling products or services over
 ## Requirements & Entities
 **Employee**: User responsible for creating and managing the store, stock, cash flow, adding products, etc., as well as getting, separating, and sending orders with products.
 
-**Customer**: User responsible for buying products from the store.
-They need to register to look at items in the store.
+**Customer**: User responsible for buying products from the store. They need to register to look at items in the store.
 
 **Products**: Items shown to customers for purchase.
 
@@ -30,6 +29,7 @@ They need to register to look at items in the store.
 **Order**: Contains all information about cart items after purchase.
 
 ### To-Do Tasks
+
 - **Products**
     - [x]  Employee can create a product
         - [x]  When creating, the system automatically creates images
@@ -53,10 +53,12 @@ They need to register to look at items in the store.
     - [x]  Employee can get one product quantity in stock
 - **Employee (User with Role EMPLOYEE)**
     - [ ]  Employee can delete themselves
-    - [ ]  Employee can create other employees
+    - [x]  Employee can create other employees
     - [ ]  System can add the role EMPLOYEE
     - [ ]  Employee can get their own data
     - [ ]  Employee can update their own data
+- **Roles (User with Role)**
+    - [x]  System can list two roles **CUSTOMER and EMPLOYEE**
 - **Customer (User with Role CUSTOMER)**
     - [ ]  Customer can delete themselves
     - [ ]  System can add the role CUSTOMER
@@ -72,7 +74,7 @@ They need to register to look at items in the store.
     - [ ]  Customer can have order items
 - **Authentication**
     - [ ]  All users can log in
-    - [ ]  Customers can register
+    - [x]  Customers can register
 
 ## How to Install 🔑
 
