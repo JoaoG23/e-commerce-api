@@ -2,7 +2,6 @@ package com.ecommerce.ecommerce.entities.users.model;
 
 
 import com.ecommerce.ecommerce.entities.users.enums.UserRole;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,7 +37,6 @@ public class User implements UserDetails {
 			return List.of(
 					new SimpleGrantedAuthority("ROLE_EMPLOYEE"),
 					new SimpleGrantedAuthority("ROLE_USER")
-
 			);
 		}
 		if (this.role == UserRole.COSTUMER) {
