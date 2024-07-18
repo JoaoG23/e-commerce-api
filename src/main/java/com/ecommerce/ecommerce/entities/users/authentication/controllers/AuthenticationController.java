@@ -3,6 +3,7 @@ package com.ecommerce.ecommerce.entities.users.authentication.controllers;
 import com.ecommerce.ecommerce.entities.users.authentication.dtos.AuthResponseDTO;
 import com.ecommerce.ecommerce.entities.users.authentication.dtos.LoginRequestDTO;
 import com.ecommerce.ecommerce.entities.users.authentication.dtos.RegisterRequestDTO;
+import com.ecommerce.ecommerce.entities.users.enums.UserRole;
 import com.ecommerce.ecommerce.entities.users.model.User;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
@@ -55,6 +56,7 @@ public class AuthenticationController {
 			newUser.setPassword(passwordEncoder.encode(body.password()));
 			newUser.setEmail(body.email());
 			newUser.setName(body.name());
+			newUser.setRole(body.role());
 			this.repository.save(newUser);
 
 			String token = this.tokenServices.generateToken(newUser);

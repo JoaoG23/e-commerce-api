@@ -25,7 +25,6 @@ public class Stock {
 	@JsonManagedReference
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "products_id", referencedColumnName = "id")
-
 	private Product product;
 	private Integer quantity;
 
