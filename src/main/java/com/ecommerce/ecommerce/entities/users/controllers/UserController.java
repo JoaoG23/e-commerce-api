@@ -15,7 +15,7 @@ public class UserController {
 
 
 //	@PutMapping("/{id}")
-//	public ResponseEntity<String> updateById(@PathVariable(value = "id") Long id, @RequestBody @Valid UserCreatedDTO userDTO) {
+//	public ResponseEntity<String> updateById(@PathVariable(value = "id") Long id, @RequestBody @Valid RegisterRequestDTO userDTO) {
 //
 //		User userModel = new User();
 //		BeanUtils.copyProperties(userDTO, userModel);

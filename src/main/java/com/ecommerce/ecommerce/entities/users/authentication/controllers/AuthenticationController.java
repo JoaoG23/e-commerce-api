@@ -1,8 +1,9 @@
 package com.ecommerce.ecommerce.entities.users.authentication.controllers;
 
 import com.ecommerce.ecommerce.entities.users.authentication.dtos.AuthResponseDTO;
+import com.ecommerce.ecommerce.entities.users.authentication.dtos.CostumerRequestDTO;
+import com.ecommerce.ecommerce.entities.users.authentication.dtos.EmployeeRequestDTO;
 import com.ecommerce.ecommerce.entities.users.authentication.dtos.LoginRequestDTO;
-import com.ecommerce.ecommerce.entities.users.authentication.dtos.RegisterRequestDTO;
 import com.ecommerce.ecommerce.entities.users.enums.UserRole;
 import com.ecommerce.ecommerce.entities.users.model.User;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
@@ -47,8 +48,8 @@ public class AuthenticationController {
 		}
 	}
 
-	@PostMapping("/register")
-	public ResponseEntity<?> register(@RequestBody @Valid RegisterRequestDTO body) {
+	@PostMapping("/employee/register")
+	public ResponseEntity<?> registerEmployee(@RequestBody @Valid EmployeeRequestDTO body) {
 		Optional<User> user = this.repository.findByEmail(body.email());
 
 		if (user.isEmpty()) {
@@ -56,12 +57,29 @@ public class AuthenticationController {
 			newUser.setPassword(passwordEncoder.encode(body.password()));
 			newUser.setEmail(body.email());
 			newUser.setName(body.name());
-			newUser.setRole(body.role());
+			newUser.setRole(UserRole.EMPLOYEE);
 			this.repository.save(newUser);
 
 			String token = this.tokenServices.generateToken(newUser);
 			return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(token));
 		}
-		return ResponseEntity.badRequest().body("User already exists");
+		return ResponseEntity.badRequest().body("Employee already exists");
+	}
+	@PostMapping("/costumer/register")
+	public ResponseEntity<?> registerCostumer(@RequestBody @Valid CostumerRequestDTO body) {
+		Optional<User> user = this.repository.findByEmail(body.email());
+
+		if (user.isEmpty()) {
+			User newUser = new User();
+			newUser.setPassword(passwordEncoder.encode(body.password()));
+			newUser.setEmail(body.email());
+			newUser.setName(body.name());
+			newUser.setRole(UserRole.COSTUMER);
+			this.repository.save(newUser);
+
+			String token = this.tokenServices.generateToken(newUser);
+			return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(token));
+		}
+		return ResponseEntity.badRequest().body("Costumer already exists");
 	}
 }

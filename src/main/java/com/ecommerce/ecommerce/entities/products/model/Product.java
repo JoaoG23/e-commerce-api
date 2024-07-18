@@ -1,6 +1,4 @@
 package com.ecommerce.ecommerce.entities.products.model;
-
-
 import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 import com.ecommerce.ecommerce.entities.stock.model.Stock;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -12,7 +10,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-
 
 @Getter
 @Setter

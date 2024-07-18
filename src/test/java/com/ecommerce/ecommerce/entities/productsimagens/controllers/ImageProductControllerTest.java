@@ -4,9 +4,8 @@ package com.ecommerce.ecommerce.entities.productsimagens.controllers;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
 import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
-import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
-import com.ecommerce.ecommerce.entities.users.dtos.UserCreatedDTO;
+import com.ecommerce.ecommerce.entities.users.authentication.dtos.EmployeeRequestDTO;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
@@ -99,7 +98,6 @@ class ImageProductControllerTest {
 	}
 
 
-
 	@Test
 	@DisplayName("Find one picture for product by id and return success 200")
 	void findOneByIdCase1() throws Exception {
@@ -121,14 +119,14 @@ class ImageProductControllerTest {
 
 	private String createUserInitial() throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
-		UserCreatedDTO userCreated = new UserCreatedDTO(null,
+		var userCreated = new EmployeeRequestDTO(
 				"Usuario de testes",
 				"admin@teste.com",
 				"admin"
 		);
 
 		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-						.post("/auth/register")
+						.post("/auth/employee/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(userCreated)))
 				.andReturn();
@@ -162,6 +160,7 @@ class ImageProductControllerTest {
 				.getContentAsString();
 		return response;
 	}
+
 	private String createImageForProduct(String productId) throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
 		var product = new ImageProductCreatedDTO(
