@@ -1,7 +1,10 @@
 package com.ecommerce.ecommerce.entities.users.model;
 
 
+import com.ecommerce.ecommerce.entities.orders.model.Order;
+import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 import com.ecommerce.ecommerce.entities.users.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,6 +33,11 @@ public class User implements UserDetails {
 
 	@Enumerated(EnumType.STRING)
 	private UserRole role;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	@Column(nullable = true)
+	private List<Order> orders;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

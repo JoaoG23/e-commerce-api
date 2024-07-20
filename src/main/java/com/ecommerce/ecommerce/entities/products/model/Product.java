@@ -1,4 +1,5 @@
 package com.ecommerce.ecommerce.entities.products.model;
+import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
 import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 import com.ecommerce.ecommerce.entities.stock.model.Stock;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -39,6 +40,12 @@ public class Product {
 
 	@OneToOne(mappedBy = "product")
 	private Stock stock;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	@Column(nullable = true)
+	private List<OrderItem> ordersItems;
+
 
 	@CreatedDate
 	private LocalDateTime createdAt;
