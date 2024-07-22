@@ -3,6 +3,7 @@ package com.ecommerce.ecommerce.entities.orders.model;
 import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
 import com.ecommerce.ecommerce.entities.users.model.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,6 +35,7 @@ public class Order {
 
 	private String methodPayment;
 
+	@JsonManagedReference
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems;
 

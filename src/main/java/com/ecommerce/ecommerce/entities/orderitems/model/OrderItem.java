@@ -7,8 +7,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
 @Entity
 @Table(name = "order_items")
@@ -25,7 +23,7 @@ public class OrderItem {
 
 	@ManyToOne
 	@JoinColumn(name = "order_id", nullable = true)
-	@JsonBackReference
+	@JsonManagedReference
 	private Order order;
 
 	private Integer quantity;

@@ -1,19 +1,20 @@
 package com.ecommerce.ecommerce.entities.orders.dtos;
 
 import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
+import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 public record OrderDTO(
-		Optional<String> id,
+		@NotBlank Optional<String> id,
 
-		String userId,
-		String methodPayment,
+		@NotBlank String userId,
+		@NotBlank String methodPayment,
 
-		BigDecimal totalPrice,
-		Optional<List<OrderItem>> items
+		@NotBlank BigDecimal totalPrice,
+		@NotBlank Optional<List<OrderItem>> items
 
 ) {
 }

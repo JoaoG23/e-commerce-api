@@ -39,6 +39,7 @@ public class Product {
 	private List<ImageProduct> imagesProduct;
 
 	@OneToOne(mappedBy = "product")
+	@JsonManagedReference
 	private Stock stock;
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)

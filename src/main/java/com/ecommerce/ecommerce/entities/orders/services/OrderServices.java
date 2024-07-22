@@ -1,9 +1,16 @@
 package com.ecommerce.ecommerce.entities.orders.services;
 
+import com.ecommerce.ecommerce.entities.orderitems.dtos.OrderItemDTO;
+import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
+import com.ecommerce.ecommerce.entities.orderitems.repository.OrderItemsRepository;
 import com.ecommerce.ecommerce.entities.orders.dtos.OrderDTO;
 import com.ecommerce.ecommerce.entities.orders.dtos.OrderInsertedDTO;
 import com.ecommerce.ecommerce.entities.orders.model.Order;
 import com.ecommerce.ecommerce.entities.orders.repository.OrderRepository;
+import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
+import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
+import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
+import com.ecommerce.ecommerce.entities.users.enums.UserRole;
 import com.ecommerce.ecommerce.entities.users.model.User;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
@@ -14,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +32,11 @@ import java.util.stream.Collectors;
 public class OrderServices {
 	@Autowired
 	private OrderRepository orderRepository;
+
+	@Autowired
+	private ProductRepository productRepository;
+	@Autowired
+	private OrderItemsRepository orderItemsRepository;
 	@Autowired
 	private UserRepository userRepository;
 
@@ -32,9 +45,28 @@ public class OrderServices {
 		var order = new Order();
 		BeanUtils.copyProperties(orderDTO, order);
 
-		User user = userRepository.findById(orderDTO.userId())
-				.orElseThrow(() -> new NotFoundCustomException("Costumer not found"));
+		User user = userRepository.findById(orderDTO.getUserId())
+				.orElseThrow(() -> new NotFoundCustomException("User not found"));
+
+		if (user.getRole() != UserRole.COSTUMER) throw new NotFoundCustomException("Costumer don't exist");
+
+		Order orderCreated = orderRepository.save(order);
+
+		// add items
+		// add product in the items
+		// return sum value product + quatity product in API
 		order.setUser(user);
+
+		List<OrderItemDTO> itemsDto = orderDTO.getItems();
+
+		orderDTO.getItems().forEach(itemDto -> {
+			var itemsModel = new OrderItem();
+
+			BeanUtils.copyProperties(itemDto, itemsModel);
+			itemsModel.setProduct(productRepository.findById(itemDto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found")));
+			itemsModel.setOrder(orderCreated);
+			orderItemsRepository.save(itemsModel);
+		});
 
 		return orderRepository.save(order);
 	}
@@ -52,8 +84,11 @@ public class OrderServices {
 		BeanUtils.copyProperties(orderDTO, order);
 
 		order.setId(id);
-		User user = userRepository.findById(orderDTO.userId())
+		User user = userRepository.findById(orderDTO.getUserId())
 				.orElseThrow(() -> new NotFoundCustomException("Costumer not found"));
+
+		if (user.getRole() != UserRole.COSTUMER) throw new NotFoundCustomException("Costumer don't exist");
+
 		order.setUser(user);
 
 		return orderRepository.save(order);
