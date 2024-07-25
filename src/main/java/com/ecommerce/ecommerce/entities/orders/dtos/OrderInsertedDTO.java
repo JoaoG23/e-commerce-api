@@ -1,6 +1,6 @@
 package com.ecommerce.ecommerce.entities.orders.dtos;
 
-import com.ecommerce.ecommerce.entities.orderitems.dtos.OrderItemDTO;
+import com.ecommerce.ecommerce.entities.orderitems.dtos.OrderItemInsertedDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -17,5 +17,5 @@ public class OrderInsertedDTO{
 	private String methodPayment;
 
 	@NotNull
-	private List<OrderItemDTO> items;
+	private List<OrderItemInsertedDTO> items;
 }

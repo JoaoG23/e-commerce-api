@@ -9,7 +9,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
-
 @Data
 @Entity
 @ToString(exclude = "product")
@@ -25,7 +24,7 @@ public class ImageProduct {
 
 	@ManyToOne
 	@JoinColumn(name = "product_id", nullable = true)
-	@JsonBackReference
+	@JsonBackReference // Ajuste correto
 	private Product product;
 
 	@CreatedDate

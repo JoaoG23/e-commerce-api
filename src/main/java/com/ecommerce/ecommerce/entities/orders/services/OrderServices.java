@@ -1,6 +1,7 @@
 package com.ecommerce.ecommerce.entities.orders.services;
 
 import com.ecommerce.ecommerce.entities.orderitems.dtos.OrderItemDTO;
+import com.ecommerce.ecommerce.entities.orderitems.dtos.OrderItemInsertedDTO;
 import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
 import com.ecommerce.ecommerce.entities.orderitems.repository.OrderItemsRepository;
 import com.ecommerce.ecommerce.entities.orders.dtos.OrderDTO;
@@ -8,8 +9,6 @@ import com.ecommerce.ecommerce.entities.orders.dtos.OrderInsertedDTO;
 import com.ecommerce.ecommerce.entities.orders.model.Order;
 import com.ecommerce.ecommerce.entities.orders.repository.OrderRepository;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
-import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreatedDTO;
-import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 import com.ecommerce.ecommerce.entities.users.enums.UserRole;
 import com.ecommerce.ecommerce.entities.users.model.User;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
@@ -21,10 +20,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,9 +58,9 @@ public class OrderServices {
 		// return sum value product + quatity product in API
 		order.setUser(user);
 
-		List<OrderItemDTO> itemsDto = orderDTO.getItems();
+		List<OrderItemInsertedDTO> itemsDto = orderDTO.getItems();
 
-		orderDTO.getItems().forEach(itemDto -> {
+		itemsDto.forEach(itemDto -> {
 			var itemsModel = new OrderItem();
 
 			BeanUtils.copyProperties(itemDto, itemsModel);
@@ -75,6 +76,7 @@ public class OrderServices {
 	public void deleteById(String id) {
 		validateOrderNotExists(id);
 		orderRepository.deleteById(id);
+
 	}
 
 	@Transactional
@@ -94,40 +96,34 @@ public class OrderServices {
 		return orderRepository.save(order);
 	}
 
-	public List<OrderDTO> findAll() {
-		List<Order> orders = orderRepository.findAll();
-		List<OrderDTO> orderDTOs = new ArrayList<>();
-		for (Order order : orders) {
-			OrderDTO orderDTO = convertModelToOrderDTO(order);
-			orderDTOs.add(orderDTO);
-		}
-		return orderDTOs;
+	public List<OrderDTO> findOrderItemsAll() {
+		List<Object[]> orderModelList = (List<Object[]>) orderRepository.findAllOrderItems();
+		List<OrderDTO> orderItemDTOs = orderModelList.stream().map(this::convertToOrderItemDTO).collect(Collectors.toList());
+		return orderItemDTOs;
 	}
 
-	public Page<OrderDTO> findAllByPage(Pageable pageable) {
-		Page<Order> pages = orderRepository.findAll(pageable);
-		List<OrderDTO> orderDTOs = pages.getContent().stream().map(this::convertModelToOrderDTO).collect(Collectors.toList());
-		return new PageImpl<>(orderDTOs, pageable, pages.getTotalElements());
+	public List<OrderDTO> findOrderItemsByOrderId(String orderId) {
+		validateOrderNotExists(orderId);
+		List<Object[]> orderModelList = (List<Object[]>) orderRepository.findOrderItemsByOrderId(orderId);
+		List<OrderDTO> orderItemDTOs = orderModelList.stream().map(this::convertToOrderItemDTO).collect(Collectors.toList());
+		return orderItemDTOs;
 	}
 
-	public OrderDTO findById(String id) {
-		validateOrderNotExists(id);
-
-		Optional<Order> orderModelOptional = orderRepository.findById(id);
-		Order order = orderModelOptional.get();
-		return convertModelToOrderDTO(order);
-	}
-
-	private OrderDTO convertModelToOrderDTO(Order order) {
-		var orderDTO = new OrderDTO(
-				Optional.ofNullable(order.getId()),
-				order.getUser().getId(),
-				order.getMethodPayment(),
-				order.getTotalPrice(),
-				Optional.ofNullable(order.getOrderItems())
+	private OrderDTO convertToOrderItemDTO(Object[] array) {
+		return new OrderDTO(
+				(String) array[0],   // orderId
+				(String) array[1],   // methodPayment
+				(BigDecimal) array[2], // totalPrice
+				(LocalDateTime) array[3], // updatedAt
+				(String) array[4],   // userId
+				(String) array[5],   // id
+				(Integer) array[6],  // quantity
+				(String) array[7],   // productId
+				(String) array[8],   // details
+				(String) array[9],   // nameProduct
+				(BigDecimal) array[10], // price
+				(BigDecimal) array[11]  // totalPriceItem
 		);
-
-		return orderDTO;
 	}
 
 	private void validateOrderNotExists(String id) {
