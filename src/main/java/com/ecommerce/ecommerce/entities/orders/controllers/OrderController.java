@@ -36,7 +36,7 @@ public class OrderController {
 		return ResponseEntity.ok().body("Order deleted: " + id);
 	}
 
-	@GetMapping("/{orderId}/items")
+	@GetMapping("/orders-items/{orderId}")
 	public ResponseEntity<List<OrderDTO>> findOrderItemsByOrderId(@PathVariable(value = "orderId") String orderId) {
 		List<OrderDTO> items = orderServices.findOrderItemsByOrderId(orderId);
 		return ResponseEntity.ok().body(items);

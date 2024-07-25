@@ -1,6 +1,5 @@
 package com.ecommerce.ecommerce.entities.orders.services;
 
-import com.ecommerce.ecommerce.entities.orderitems.dtos.OrderItemDTO;
 import com.ecommerce.ecommerce.entities.orderitems.dtos.OrderItemInsertedDTO;
 import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
 import com.ecommerce.ecommerce.entities.orderitems.repository.OrderItemsRepository;
@@ -16,16 +15,11 @@ import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
