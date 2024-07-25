@@ -1,6 +1,5 @@
 package com.ecommerce.ecommerce.infra.security;
 
-
 import com.ecommerce.ecommerce.entities.users.model.User;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -9,13 +8,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -33,8 +30,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 		if (login != null) {
 			User user = userRepository.findByEmail(login).orElseThrow(() -> new RuntimeException("User not found"));
 
-			var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")); // Criar coleção de roles
-			var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities); // Busca autenticação e destribui na aplicação
+			var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()); // Busca autenticação e destribui na aplicação
 			SecurityContextHolder.getContext().setAuthentication(authentication); // Inclui autenticação na aplicação
 		}
 		filterChain.doFilter(request, response);

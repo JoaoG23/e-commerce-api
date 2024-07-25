@@ -7,7 +7,7 @@ import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreated
 import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockCreatedDTO;
 import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
-import com.ecommerce.ecommerce.entities.users.dtos.UserCreatedDTO;
+import com.ecommerce.ecommerce.entities.users.authentication.dtos.EmployeeRequestDTO;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
@@ -240,14 +240,14 @@ class ProductControllerTest {
 
 	private String createUserInitial() throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
-		UserCreatedDTO userCreated = new UserCreatedDTO(null,
+		var userCreated = new EmployeeRequestDTO(
 				"Usuario de testes",
 				"admin@teste.com",
 				"admin"
 		);
 
 		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-						.post("/auth/register")
+						.post("/auth/employee/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(userCreated)))
 				.andReturn();

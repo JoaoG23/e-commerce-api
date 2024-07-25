@@ -1,8 +1,8 @@
 package com.ecommerce.ecommerce.entities.products.model;
-
-
+import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
 import com.ecommerce.ecommerce.entities.productsimagens.model.ImageProduct;
 import com.ecommerce.ecommerce.entities.stock.model.Stock;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,11 +13,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Getter
 @Setter
 @Entity
-@ToString(exclude = "imagesProduct")
+@ToString(exclude = {"imagesProduct", "stock", "ordersItems"})
 @Table(name = "products")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,11 +36,15 @@ public class Product {
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	@Column(nullable = true)
 	private List<ImageProduct> imagesProduct;
 
 	@OneToOne(mappedBy = "product")
+	@JsonBackReference
 	private Stock stock;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<OrderItem> ordersItems;
 
 	@CreatedDate
 	private LocalDateTime createdAt;
@@ -49,5 +52,3 @@ public class Product {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 }
-
-

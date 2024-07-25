@@ -6,7 +6,7 @@ import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreated
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockCreatedDTO;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockIncreaseDTO;
 import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
-import com.ecommerce.ecommerce.entities.users.dtos.UserCreatedDTO;
+import com.ecommerce.ecommerce.entities.users.authentication.dtos.EmployeeRequestDTO;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
@@ -82,6 +82,7 @@ class StockControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.lotPrice").value(stock.lotPrice()));
 
 	}
+
 	@Test
 	@DisplayName("Increase quantity stock item by productId with success and return 200")
 	void increaseProductCase1() throws Exception {
@@ -108,6 +109,7 @@ class StockControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.productId").value(productId))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(increased.quantity()));
 	}
+
 	@Test
 	@DisplayName("Decrease quantity stock item by productId with success and return 200")
 	void decreaseProductCase1() throws Exception {
@@ -134,6 +136,7 @@ class StockControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.productId").value(productId))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(quantity.quantity()));
 	}
+
 	@Test
 	@DisplayName("Error to decrease quantity less than 0 in stock item with success and return 200")
 	void decreaseProductCase2() throws Exception {
@@ -168,7 +171,7 @@ class StockControllerTest {
 		String product = this.createProduct();
 		var getProduct = new JSONObject(product);
 		String productId = getProduct.getString("id");
-		 this.createStockByProductId(productId);
+		this.createStockByProductId(productId);
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/stocks/page")
 						.param("page", "0")
@@ -207,14 +210,14 @@ class StockControllerTest {
 
 	private String createUserInitial() throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
-		UserCreatedDTO userCreated = new UserCreatedDTO(null,
+		var userCreated = new EmployeeRequestDTO(
 				"Usuario de testes",
 				"admin@teste.com",
 				"admin"
 		);
 
 		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-						.post("/auth/register")
+						.post("/auth/employee/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(userCreated)))
 				.andReturn();
