@@ -39,6 +39,13 @@ public class OrderItemServices {
 		entity.setOrder(orderRepository.findById(dto.getOrderId()).orElseThrow(() -> new NotFoundCustomException("Order not found")));
 		entity.setProduct(productRepository.findById(dto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found")));
 
+
+		Boolean exists = orderItemRepository.existsByOrderAndProduct(
+				orderRepository.findById(dto.getOrderId()).orElseThrow(() -> new NotFoundCustomException("Order not found")),
+				productRepository.findById(dto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found"))
+		);
+
+		if (exists == true) throw new NotFoundCustomException("Product already exists in this order");
 		entity.setQuantity(dto.getQuantity());
 		return orderItemRepository.save(entity);
 	}

@@ -1,6 +1,7 @@
 package com.ecommerce.ecommerce.entities.orders.repository;
 
 import com.ecommerce.ecommerce.entities.orders.model.Order;
+import com.ecommerce.ecommerce.entities.products.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -30,6 +31,8 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 			WHERE orders.id = :order_id
 			""", nativeQuery = true)
 	List<Object[]> findOrderItemsByOrderId(String order_id);
+
+
 
 	@Query(value = """
 			SELECT

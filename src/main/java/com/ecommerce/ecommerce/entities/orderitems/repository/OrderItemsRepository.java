@@ -1,6 +1,8 @@
 package com.ecommerce.ecommerce.entities.orderitems.repository;
 
 import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
+import com.ecommerce.ecommerce.entities.orders.model.Order;
+import com.ecommerce.ecommerce.entities.products.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -29,4 +31,6 @@ public interface OrderItemsRepository extends JpaRepository<OrderItem, String> {
 			WHERE items.id = :id
 			""", nativeQuery = true)
 	List<Object[]> findOrderItemsById(String id);
+
+	Boolean existsByOrderAndProduct(Order orderNotFound, Product productNotFound);
 }
