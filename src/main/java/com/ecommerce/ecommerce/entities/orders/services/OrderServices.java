@@ -60,6 +60,14 @@ public class OrderServices {
 			BeanUtils.copyProperties(itemDto, itemsModel);
 			itemsModel.setProduct(productRepository.findById(itemDto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found")));
 			itemsModel.setOrder(orderCreated);
+
+			Boolean exists = orderItemsRepository.existsByOrderAndProduct(
+					orderRepository.findById(itemDto.getOrderId()).orElseThrow(() -> new NotFoundCustomException("Order not found")),
+					productRepository.findById(itemDto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found"))
+			);
+
+			if (exists == true) throw new NotFoundCustomException("Product already exists in this order");
+
 			orderItemsRepository.save(itemsModel);
 		});
 

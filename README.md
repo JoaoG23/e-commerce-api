@@ -17,7 +17,8 @@ electronic commerce, is a system of buying and selling products or services over
   [![Spring Data JPA](https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-data-jpa)
   [![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-security)
 
-## Requirements & Entities
+## Functional Requirements
+
 **Employee**: User responsible for creating and managing the store, stock, cash flow, adding products, etc., as well as getting, separating, and sending orders with products.
 
 **Customer**: User responsible for buying products from the store. They need to register to look at items in the store.
@@ -61,17 +62,27 @@ electronic commerce, is a system of buying and selling products or services over
     - [x]  System can list two roles **CUSTOMER and EMPLOYEE**
 - **Customer (User with Role CUSTOMER)**
     - [ ]  Customer can delete themselves
-    - [ ]  System can add the role CUSTOMER
+    - [ ]  System can add the role **CUSTOMER**
     - [ ]  Customer can get their own data
     - [ ]  Customer can update their own data
     - [ ]  Customer can generate an order after payment
 - **Order**
-    - [ ]  Customer can create an order
-        - [ ]  All orders should have one or more items
-    - [ ]  Customer can delete their order
-    - [ ]  Customer can get their order data
+    - [x]  Employee or costumer can create an order for costumer
+    - [x]  Order can just have one product for item list;
+    - [x]  Can't have two of the same product in the same order
+    - [ ]  The order has 2 states. **OPEN**: means the customer should be able to update or add more items to the order created. **BEGIN PICKED**: means the customer shouldn’t be able to update or add more items and can only view their order.
+    - [ ]  Order can show total value order.
+    - [ ]  When order state to be **BEGIN PICKED**. All product into order are decrease of **STOCK**.
+    - [x]  Order must have only costumer and don’t employee and get your items
+    - [x]  Customer can delete their order and delete your items
+    - [x]  Customer can get their order data and get your items
 - **Order Items**
-    - [ ]  Customer can have order items
+    - [x]  Customer can have order items
+    - [x]  When state order **OPEN**
+        - [x]  Costumer can add Order item
+        - [x]  Costumer can remove Order item
+        - [x]  Costumer can update Order item
+        - [x]  Costumer can get one Order item
 - **Authentication**
     - [ ]  All users can log in
     - [x]  Customers can register

@@ -10,14 +10,10 @@ import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
 import com.ecommerce.ecommerce.infra.HandlerErros.NotFoundCustomException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,12 +36,12 @@ public class OrderItemServices {
 		entity.setProduct(productRepository.findById(dto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found")));
 
 
-		Boolean exists = orderItemRepository.existsByOrderAndProduct(
+		Boolean isExistsProductInOrder = orderItemRepository.existsByOrderAndProduct(
 				orderRepository.findById(dto.getOrderId()).orElseThrow(() -> new NotFoundCustomException("Order not found")),
 				productRepository.findById(dto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found"))
 		);
 
-		if (exists == true) throw new NotFoundCustomException("Product already exists in this order");
+		if (isExistsProductInOrder == true) throw new NotFoundCustomException("Product already exists in this order");
 		entity.setQuantity(dto.getQuantity());
 		return orderItemRepository.save(entity);
 	}
@@ -60,11 +56,15 @@ public class OrderItemServices {
 		entity.setProduct(productRepository.findById(dto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found")));
 		entity.setQuantity(dto.getQuantity());
 
+		Boolean isExistsProductInOrder = orderItemRepository.existsByIdAndOrderAndProduct(
+				id,
+				orderRepository.findById(dto.getOrderId()).orElseThrow(() -> new NotFoundCustomException("Order not found")),
+				productRepository.findById(dto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found"))
+		);
+
+		if (isExistsProductInOrder == false) throw new NotFoundCustomException("Product already exists in another item");
 		return orderItemRepository.save(entity);
 	}
-
-
-
 
 	public OrderDTO findById(String id) {
 		List<Object[]> orderModelList = (List<Object[]>) orderItemRepository.findOrderItemsById(id);

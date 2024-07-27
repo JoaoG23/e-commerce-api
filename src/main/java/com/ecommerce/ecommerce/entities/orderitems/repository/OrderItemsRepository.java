@@ -33,4 +33,6 @@ public interface OrderItemsRepository extends JpaRepository<OrderItem, String> {
 	List<Object[]> findOrderItemsById(String id);
 
 	Boolean existsByOrderAndProduct(Order orderNotFound, Product productNotFound);
+
+	Boolean existsByIdAndOrderAndProduct(String id,Order orderNotFound, Product productNotFound);
 }
