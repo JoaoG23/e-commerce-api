@@ -1,18 +1,20 @@
 package com.ecommerce.ecommerce.entities.orderitems.dtos;
-import com.ecommerce.ecommerce.entities.orders.model.Order;
-import com.ecommerce.ecommerce.entities.products.model.Product;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.Optional;
 
 @Data
-public class OrderItemDTO {
+@ToString
+public class ItemInsertedDTO {
 
 	private Optional<String> id;
 	@NotBlank
-	private Product product;
-	private Order order;
+	private String productId;
 	@NotBlank
+	private String orderId;
+	@NotNull
 	private Integer quantity;
 }

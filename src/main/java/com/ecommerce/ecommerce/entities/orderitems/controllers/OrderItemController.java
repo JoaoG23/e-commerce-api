@@ -1,14 +1,16 @@
 package com.ecommerce.ecommerce.entities.orderitems.controllers;
 
-import com.ecommerce.ecommerce.entities.orderitems.dtos.OrderItemInsertedDTO;
+import com.ecommerce.ecommerce.entities.orderitems.dtos.ItemInsertedDTO;
+import com.ecommerce.ecommerce.entities.orderitems.dtos.ItemQueryDTO;
 import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
 import com.ecommerce.ecommerce.entities.orderitems.services.OrderItemServices;
-import com.ecommerce.ecommerce.entities.orders.dtos.OrderDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/orders/items")
@@ -17,13 +19,13 @@ public class OrderItemController {
 	private OrderItemServices orderItemServices;
 
 	@PostMapping
-	public ResponseEntity<OrderItem> createOne(@RequestBody @Valid OrderItemInsertedDTO orderItemDTO) {
+	public ResponseEntity<OrderItem> createOne(@RequestBody @Valid ItemInsertedDTO orderItemDTO) {
 		OrderItem orderItem = orderItemServices.create(orderItemDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(orderItem);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<OrderItem> updateById(@PathVariable(value = "id") String id, @RequestBody @Valid OrderItemInsertedDTO orderItemDTO) {
+	public ResponseEntity<OrderItem> updateById(@PathVariable(value = "id") String id, @RequestBody @Valid ItemInsertedDTO orderItemDTO) {
 		OrderItem orderItem = orderItemServices.updateById(id, orderItemDTO);
 		return ResponseEntity.ok().body(orderItem);
 	}
@@ -35,10 +37,12 @@ public class OrderItemController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<OrderDTO> findOneById(@PathVariable(value = "id") String id) {
-		OrderDTO orderItem = orderItemServices.findById(id);
-		return (ResponseEntity<OrderDTO>) ResponseEntity.ok().body(orderItem);
+	public ResponseEntity<ItemQueryDTO> findOneById(@PathVariable(value = "id") String id) {
+		ItemQueryDTO orderItem = orderItemServices.findById(id);
+		return (ResponseEntity<ItemQueryDTO>) ResponseEntity.ok().body(orderItem);
 	}
-
-
+	@GetMapping
+	public ResponseEntity<List<ItemQueryDTO>> findAll() {
+		return ResponseEntity.ok().body(orderItemServices.findAll());
+	}
 }

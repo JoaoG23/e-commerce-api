@@ -1,6 +1,5 @@
 package com.ecommerce.ecommerce.entities.orders.controllers;
 
-import com.ecommerce.ecommerce.entities.orders.dtos.OrderDTO;
 import com.ecommerce.ecommerce.entities.orders.dtos.OrderInsertedDTO;
 import com.ecommerce.ecommerce.entities.orders.model.Order;
 import com.ecommerce.ecommerce.entities.orders.services.OrderServices;
@@ -29,22 +28,26 @@ public class OrderController {
 		Order order = orderServices.updateById(id, orderDTO);
 		return ResponseEntity.ok().body(order);
 	}
+	@PatchMapping("/close/{id}")
+	public ResponseEntity<Order> closeOrderById(@PathVariable(value = "id") String id) {
+		Order order = orderServices.closeOrderById(id);
+		return ResponseEntity.ok().body(order);
+	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteById(@PathVariable(value = "id") String id) {
 		orderServices.deleteById(id);
 		return ResponseEntity.ok().body("Order deleted: " + id);
 	}
-
-	@GetMapping("/orders-items/{orderId}")
-	public ResponseEntity<List<OrderDTO>> findOrderItemsByOrderId(@PathVariable(value = "orderId") String orderId) {
-		List<OrderDTO> items = orderServices.findOrderItemsByOrderId(orderId);
-		return ResponseEntity.ok().body(items);
+	@GetMapping("/{id}")
+	public ResponseEntity<Order> findById(@PathVariable(value = "id") String id) {
+		Order order = orderServices.findById(id).get();
+		return ResponseEntity.ok().body(order);
 	}
 
 	@GetMapping
-	public ResponseEntity<List<OrderDTO>> findOrderItemsAll() {
-		List<OrderDTO> items = orderServices.findOrderItemsAll();
-		return ResponseEntity.ok().body(items);
+	public ResponseEntity<List<Order>> findAll() {
+		List<Order> orders = orderServices.findAll();
+		return ResponseEntity.ok().body(orders);
 	}
 }

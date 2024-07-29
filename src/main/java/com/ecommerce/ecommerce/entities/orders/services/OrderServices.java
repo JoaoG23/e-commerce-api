@@ -1,13 +1,16 @@
 package com.ecommerce.ecommerce.entities.orders.services;
 
-import com.ecommerce.ecommerce.entities.orderitems.dtos.OrderItemInsertedDTO;
+import com.ecommerce.ecommerce.entities.orderitems.dtos.ItemInsertedDTO;
 import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
 import com.ecommerce.ecommerce.entities.orderitems.repository.OrderItemsRepository;
-import com.ecommerce.ecommerce.entities.orders.dtos.OrderDTO;
 import com.ecommerce.ecommerce.entities.orders.dtos.OrderInsertedDTO;
+import com.ecommerce.ecommerce.entities.orders.enums.OrderState;
 import com.ecommerce.ecommerce.entities.orders.model.Order;
 import com.ecommerce.ecommerce.entities.orders.repository.OrderRepository;
+import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
+import com.ecommerce.ecommerce.entities.stock.model.Stock;
+import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
 import com.ecommerce.ecommerce.entities.users.enums.UserRole;
 import com.ecommerce.ecommerce.entities.users.model.User;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
@@ -17,11 +20,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderServices {
@@ -35,10 +35,14 @@ public class OrderServices {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private StockRepository stockRepository;
+
 	@Transactional
 	public Order create(OrderInsertedDTO orderDTO) {
 		var order = new Order();
 		BeanUtils.copyProperties(orderDTO, order);
+		order.setOrderState(OrderState.OPEN);
 
 		User user = userRepository.findById(orderDTO.getUserId())
 				.orElseThrow(() -> new NotFoundCustomException("User not found"));
@@ -46,29 +50,26 @@ public class OrderServices {
 		if (user.getRole() != UserRole.COSTUMER) throw new NotFoundCustomException("Costumer don't exist");
 
 		Order orderCreated = orderRepository.save(order);
-
-		// add items
-		// add product in the items
-		// return sum value product + quatity product in API
 		order.setUser(user);
 
-		List<OrderItemInsertedDTO> itemsDto = orderDTO.getItems();
+		List<ItemInsertedDTO> itemsDto = orderDTO.getItems();
 
 		itemsDto.forEach(itemDto -> {
-			var itemsModel = new OrderItem();
+			var itemEntity = new OrderItem();
 
-			BeanUtils.copyProperties(itemDto, itemsModel);
-			itemsModel.setProduct(productRepository.findById(itemDto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found")));
-			itemsModel.setOrder(orderCreated);
+			Product product = productRepository.findById(itemDto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found"));
 
-			Boolean exists = orderItemsRepository.existsByOrderAndProduct(
+			BeanUtils.copyProperties(itemDto, itemEntity);
+			itemEntity.setProduct(product);
+			itemEntity.setOrder(orderCreated);
+
+			Boolean isAlreadyExistsItem = orderItemsRepository.existsByOrderAndProduct(
 					orderRepository.findById(itemDto.getOrderId()).orElseThrow(() -> new NotFoundCustomException("Order not found")),
 					productRepository.findById(itemDto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found"))
 			);
+			if (isAlreadyExistsItem == true) throw new NotFoundCustomException("Product already exists in this order");
 
-			if (exists == true) throw new NotFoundCustomException("Product already exists in this order");
-
-			orderItemsRepository.save(itemsModel);
+			checkStockQuantity(itemDto);
 		});
 
 		return orderRepository.save(order);
@@ -84,7 +85,9 @@ public class OrderServices {
 	@Transactional
 	public Order updateById(String id, OrderInsertedDTO orderDTO) {
 		validateOrderNotExists(id);
-		var order = new Order();
+		Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Order not found"));
+
+		order.setOrderState(OrderState.OPEN);
 		BeanUtils.copyProperties(orderDTO, order);
 
 		order.setId(id);
@@ -98,34 +101,26 @@ public class OrderServices {
 		return orderRepository.save(order);
 	}
 
-	public List<OrderDTO> findOrderItemsAll() {
-		List<Object[]> orderModelList = (List<Object[]>) orderRepository.findAllOrderItems();
-		List<OrderDTO> orderItemDTOs = orderModelList.stream().map(this::convertToOrderItemDTO).collect(Collectors.toList());
-		return orderItemDTOs;
+	@Transactional
+	public Order closeOrderById(String id) {
+		validateOrderNotExists(id);
+		Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Order not found"));
+		order.setOrderState(OrderState.BEGIN_PICKED);
+
+		return orderRepository.save(order);
+
+		// TODO: Implementar regra de negócio
+		// Get all item of order
+		// for each item decrease item stock and
+		// and you quantity product.
 	}
 
-	public List<OrderDTO> findOrderItemsByOrderId(String orderId) {
-		validateOrderNotExists(orderId);
-		List<Object[]> orderModelList = (List<Object[]>) orderRepository.findOrderItemsByOrderId(orderId);
-		List<OrderDTO> orderItemDTOs = orderModelList.stream().map(this::convertToOrderItemDTO).collect(Collectors.toList());
-		return orderItemDTOs;
+	public List<Order> findAll() {
+		return orderRepository.findAll();
 	}
 
-	private OrderDTO convertToOrderItemDTO(Object[] array) {
-		return new OrderDTO(
-				(String) array[0],   // orderId
-				(String) array[1],   // methodPayment
-				(BigDecimal) array[2], // totalPrice
-				(LocalDateTime) array[3], // updatedAt
-				(String) array[4],   // userId
-				(String) array[5],   // id
-				(Integer) array[6],  // quantity
-				(String) array[7],   // productId
-				(String) array[8],   // details
-				(String) array[9],   // nameProduct
-				(BigDecimal) array[10], // price
-				(BigDecimal) array[11]  // totalPriceItem
-		);
+	public Optional<Order> findById(String id) {
+		return orderRepository.findById(id);
 	}
 
 	private void validateOrderNotExists(String id) {
@@ -133,5 +128,16 @@ public class OrderServices {
 		if (orderFound.isEmpty()) {
 			throw new NotFoundCustomException("Order not found with id: " + id);
 		}
+	}
+
+	private void checkStockQuantity(ItemInsertedDTO itemDto) {
+		Product product = productRepository.findById(itemDto.getProductId())
+				.orElseThrow(() -> new NotFoundCustomException("Product not found"));
+		Stock productStock = stockRepository.findByProduct(product);
+		Integer availableQuantity = productStock.getQuantity();
+
+		int remainingQuantity = availableQuantity - itemDto.getQuantity();
+		if (remainingQuantity < 0)
+			throw new NotFoundCustomException("Insufficient stock! Requested quantity: " + itemDto.getQuantity() + ". Available quantity: " + availableQuantity);
 	}
 }

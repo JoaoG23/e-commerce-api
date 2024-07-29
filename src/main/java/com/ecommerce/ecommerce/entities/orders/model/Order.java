@@ -1,6 +1,7 @@
 package com.ecommerce.ecommerce.entities.orders.model;
 
 import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
+import com.ecommerce.ecommerce.entities.orders.enums.OrderState;
 import com.ecommerce.ecommerce.entities.users.model.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -35,7 +36,8 @@ public class Order {
 	@JsonManagedReference
 	private List<OrderItem> orderItems;
 
-	private BigDecimal totalPrice;
+	@Enumerated(EnumType.STRING)
+	private OrderState orderState;
 
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
