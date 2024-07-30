@@ -95,8 +95,6 @@ public class OrderServices {
 	public Order updateById(String id, OrderInsertedDTO orderDTO) {
 		validateOrderNotExists(id);
 		Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Order not found"));
-
-		order.setOrderState(OrderState.OPEN);
 		BeanUtils.copyProperties(orderDTO, order);
 
 		order.setId(id);
@@ -154,5 +152,16 @@ public class OrderServices {
 		int remainingQuantity = availableQuantity - itemDto.getQuantity();
 		if (remainingQuantity < 0)
 			throw new NotFoundCustomException("Insufficient stock! Requested quantity: " + itemDto.getQuantity() + ". Available quantity: " + availableQuantity);
+	}
+
+	private void checkOrderIsOpenById(String id) {
+		Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Order not found"));
+		if(order.getOrderState() != OrderState.OPEN) throw new NotFoundCustomException("Order is BEGIN PICKED or CLOSED. You can't update or manager the order");
+	}
+
+
+	private void checkUserIsCostumerById(String id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("User not found"));
+		if(user.getRole() != UserRole.COSTUMER) throw new NotFoundCustomException("Costumer don't exist");
 	}
 }
