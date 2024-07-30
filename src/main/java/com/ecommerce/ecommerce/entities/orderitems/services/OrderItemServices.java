@@ -88,6 +88,12 @@ public class OrderItemServices {
 		return itemsDto;
 	}
 
+	public List<ItemQueryDTO> findAllByOrderId(String orderId) {
+		List<Object[]> items = (List<Object[]>) orderItemRepository.findByOrderId(orderId);
+		List<ItemQueryDTO> itemsDto = items.stream().map(this::convertToOrderItemDTO).collect(Collectors.toList());
+		return itemsDto;
+	}
+
 	@Transactional
 	public void deleteById(String id) {
 		validateIfOrderItemNotExistsById(id);

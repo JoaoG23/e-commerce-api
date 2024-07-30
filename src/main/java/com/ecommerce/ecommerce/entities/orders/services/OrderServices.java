@@ -1,16 +1,20 @@
 package com.ecommerce.ecommerce.entities.orders.services;
 
 import com.ecommerce.ecommerce.entities.orderitems.dtos.ItemInsertedDTO;
+import com.ecommerce.ecommerce.entities.orderitems.dtos.ItemQueryDTO;
 import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
 import com.ecommerce.ecommerce.entities.orderitems.repository.OrderItemsRepository;
+import com.ecommerce.ecommerce.entities.orderitems.services.OrderItemServices;
 import com.ecommerce.ecommerce.entities.orders.dtos.OrderInsertedDTO;
 import com.ecommerce.ecommerce.entities.orders.enums.OrderState;
 import com.ecommerce.ecommerce.entities.orders.model.Order;
 import com.ecommerce.ecommerce.entities.orders.repository.OrderRepository;
 import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
+import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockIncreaseDTO;
 import com.ecommerce.ecommerce.entities.stock.model.Stock;
 import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
+import com.ecommerce.ecommerce.entities.stock.services.StockService;
 import com.ecommerce.ecommerce.entities.users.enums.UserRole;
 import com.ecommerce.ecommerce.entities.users.model.User;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
@@ -27,7 +31,6 @@ import java.util.Optional;
 public class OrderServices {
 	@Autowired
 	private OrderRepository orderRepository;
-
 	@Autowired
 	private ProductRepository productRepository;
 	@Autowired
@@ -37,6 +40,12 @@ public class OrderServices {
 
 	@Autowired
 	private StockRepository stockRepository;
+
+	@Autowired
+	private OrderItemServices orderItemServices;
+
+	@Autowired
+	private StockService stockService;
 
 	@Transactional
 	public Order create(OrderInsertedDTO orderDTO) {
@@ -107,12 +116,17 @@ public class OrderServices {
 		Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Order not found"));
 		order.setOrderState(OrderState.BEGIN_PICKED);
 
-		return orderRepository.save(order);
+		List<ItemQueryDTO> items = orderItemServices.findAllByOrderId(id);
 
-		// TODO: Implementar regra de negócio
-		// Get all item of order
-		// for each item decrease item stock and
-		// and you quantity product.
+		// get order Id;
+		items.forEach(item -> {
+			ItemStockIncreaseDTO itemStock = new ItemStockIncreaseDTO(false,
+					item.getQuantity(),
+					item.getProductId()
+			);
+			stockService.decreaseQuantityProduct(itemStock);
+		});
+		return orderRepository.save(order);
 	}
 
 	public List<Order> findAll() {
@@ -129,6 +143,7 @@ public class OrderServices {
 			throw new NotFoundCustomException("Order not found with id: " + id);
 		}
 	}
+
 
 	private void checkStockQuantity(ItemInsertedDTO itemDto) {
 		Product product = productRepository.findById(itemDto.getProductId())

@@ -72,7 +72,7 @@ public class StockService {
 	}
 
 	@Transactional
-	private ItemStockIncreaseDTO decreaseQuantityProduct(ItemStockIncreaseDTO itemDto) {
+	public ItemStockIncreaseDTO decreaseQuantityProduct(ItemStockIncreaseDTO itemDto) {
 		List<Stock> itemFound = stockRepository.findByProductsId(itemDto.productId());
 		if (itemFound.isEmpty()) {
 			throw new NotFoundCustomException("Item not found");
