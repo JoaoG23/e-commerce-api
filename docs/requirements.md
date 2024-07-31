@@ -1,4 +1,5 @@
-## Functional Requirements
+<img src="./logo.png" width=80  align="right" />
+<h1 align="left">Functional Requirements</h1>
 
 **Employee**: User responsible for creating and managing the store, stock, cash flow, adding products, etc., as well as getting, separating, and sending orders with products.
 
@@ -9,6 +10,8 @@
 **Stock**: Where products are managed and counted. When products are bought, the quantity is decreased from the stock.
 
 **Order**: Contains all information about cart items after purchase.
+
+![diagram](./diagram.png)
 
 ### To-Do Tasks
 
