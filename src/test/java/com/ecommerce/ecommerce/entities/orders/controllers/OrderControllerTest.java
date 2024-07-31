@@ -3,6 +3,7 @@ package com.ecommerce.ecommerce.entities.orders.controllers;
 import com.ecommerce.ecommerce.entities.orderitems.dtos.ItemInsertedDTO;
 import com.ecommerce.ecommerce.entities.orders.dtos.OrderInsertedDTO;
 import com.ecommerce.ecommerce.entities.orders.enums.OrderState;
+import com.ecommerce.ecommerce.entities.orders.repository.OrderRepository;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedWithStockDTO;
 import com.ecommerce.ecommerce.entities.products.model.Product;
@@ -12,6 +13,7 @@ import com.ecommerce.ecommerce.entities.productsimagens.dtos.ImageProductCreated
 import com.ecommerce.ecommerce.entities.productsimagens.repository.ImageProductRepository;
 import com.ecommerce.ecommerce.entities.stock.dtos.ItemStockCreatedDTO;
 import com.ecommerce.ecommerce.entities.stock.repository.StockRepository;
+import com.ecommerce.ecommerce.entities.users.authentication.dtos.CostumerRequestDTO;
 import com.ecommerce.ecommerce.entities.users.authentication.dtos.EmployeeRequestDTO;
 import com.ecommerce.ecommerce.entities.users.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +38,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -53,6 +57,9 @@ class OrderControllerTest {
 	private StockRepository stockRepository;
 
 	@Autowired
+	private OrderRepository orderRepository;
+
+	@Autowired
 	private UserRepository userRepository;
 
 	@Autowired
@@ -65,16 +72,19 @@ class OrderControllerTest {
 		imagesRepository.deleteAll();
 		productRepository.deleteAll();
 		userRepository.deleteAll();
+		orderRepository.deleteAll();
 	}
 
 
 	@Test
 	@DisplayName("Create order one order ")
 	void createOrderCase1() throws Exception {
+		this.createEmployee();
 		// Create user
-		String userString = this.createUserInitial();
-		var user = new JSONObject(userString);
-		String userId = user.getString("id");
+		String costumerString = this.createCostumer();
+		var costumer = new JSONObject(costumerString);
+
+		String userId = costumer.getString("userId");
 
 		// Create product with stock
 		Product product = this.productServices.createWithStock(new ProductCreatedWithStockDTO(null,
@@ -84,22 +94,23 @@ class OrderControllerTest {
 				new ItemStockCreatedDTO(null, null, 6, 88.00),
 				new ArrayList<ImageProductCreatedDTO>()
 		));
+		assertNotNull(product.getId());
 
 		// Test create order with items
 		var item = new ItemInsertedDTO();
 		item.setProductId(product.getId());
 		item.setQuantity(3);
 
+		assertNotNull(item.getProductId());
+
 		List<ItemInsertedDTO> items = new ArrayList<ItemInsertedDTO>();
 		items.add(item);
 
 		var objectMapper = new ObjectMapper();
-		var order = new OrderInsertedDTO(
-				userId,
-				"AVISTA",
-				items,
-				OrderState.OPEN
-		);
+		var order = new OrderInsertedDTO();
+		order.setUserId(userId);
+		order.setMethodPayment("AVISTA");
+		order.setItems(items);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/orders")
 						.contentType(MediaType.APPLICATION_JSON)
@@ -115,7 +126,7 @@ class OrderControllerTest {
 //	@DisplayName("Create one product with success and return 204")
 //	void createOneCase1() throws Exception {
 //
-//		this.createUserInitial();
+//		this.createEmployee();
 //
 //		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
 //		ObjectMapper objectMapper = new ObjectMapper();
@@ -140,7 +151,7 @@ class OrderControllerTest {
 //	@DisplayName("Create one product with images success and return 204")
 //	void createOneCase2() throws Exception {
 //
-//		this.createUserInitial();
+//		this.createEmployee();
 //
 //		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
 //		images.add(new ImageProductCreatedDTO(null, "image1.png", null));
@@ -168,7 +179,7 @@ class OrderControllerTest {
 //	@Test
 //	@DisplayName("Create one product with images and add items stock success and return 204")
 //	void createOneWithStock() throws Exception {
-//		this.createUserInitial();
+//		this.createEmployee();
 //
 //		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
 //		images.add(new ImageProductCreatedDTO(null, "image1.png", null));
@@ -198,7 +209,7 @@ class OrderControllerTest {
 //	@DisplayName("Update a product successfully and return 200")
 //	void updateOneCase1() throws Exception {
 //
-//		this.createUserInitial();
+//		this.createEmployee();
 //
 //		ObjectMapper objectMapper = new ObjectMapper();
 //		String productString = this.createProduct();
@@ -231,7 +242,7 @@ class OrderControllerTest {
 //	@Test
 //	@DisplayName("Delete one product with success and return 200")
 //	void deleteOneById() throws Exception {
-//		this.createUserInitial();
+//		this.createEmployee();
 //
 //		String productString = this.createProduct();
 //
@@ -249,7 +260,7 @@ class OrderControllerTest {
 //	@Test
 //	@DisplayName("Find all products and return success 200")
 //	void findAllCase1() throws Exception {
-//		this.createUserInitial();
+//		this.createEmployee();
 //		this.createProduct();
 //
 //		mockMvc.perform(MockMvcRequestBuilders.get("/products"))
@@ -261,7 +272,7 @@ class OrderControllerTest {
 //	@Test
 //	@DisplayName("Find all by page and return success 200")
 //	void findByPageCase2() throws Exception {
-//		this.createUserInitial();
+//		this.createEmployee();
 //		this.createProduct();
 //		this.createProduct();
 //		mockMvc.perform(MockMvcRequestBuilders.get("/products/page")
@@ -277,7 +288,7 @@ class OrderControllerTest {
 //	@DisplayName("Find one by id and return success 200")
 //	void findOneByIdCase1() throws Exception {
 //		// Create Product
-//		this.createUserInitial();
+//		this.createEmployee();
 //		String productString = this.createProduct();
 //		JSONObject product = new JSONObject(productString);
 //		// Extract Id
@@ -291,7 +302,7 @@ class OrderControllerTest {
 //				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of product"));
 //	}
 
-	private String createUserInitial() throws Exception {
+	private String createEmployee() throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
 		var userCreated = new EmployeeRequestDTO(
 				"Usuario de testes",
@@ -301,6 +312,25 @@ class OrderControllerTest {
 
 		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
 						.post("/auth/employee/register")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(userCreated)))
+				.andReturn();
+
+		String response = mvcResult
+				.getResponse()
+				.getContentAsString();
+		return response;
+	}
+	private String createCostumer() throws Exception {
+		ObjectMapper objectMapper = new ObjectMapper();
+		var userCreated = new CostumerRequestDTO(
+				"Costumer",
+				"costumer@costumer.com",
+				"costumer"
+		);
+
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+						.post("/auth/costumer/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(userCreated)))
 				.andReturn();

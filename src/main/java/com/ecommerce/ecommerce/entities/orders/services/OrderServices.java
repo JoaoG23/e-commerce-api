@@ -66,6 +66,7 @@ public class OrderServices {
 		itemsDto.forEach(itemDto -> {
 			var itemEntity = new OrderItem();
 
+			System.out.println(itemDto.getProductId());
 			Product product = productRepository.findById(itemDto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found"));
 
 			BeanUtils.copyProperties(itemDto, itemEntity);
