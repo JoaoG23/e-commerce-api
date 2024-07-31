@@ -1,9 +1,12 @@
+<img src="./docs/logo.png" width=150  align="right" />
 
+# E-CommerceGet API 
 
-# Application E-Commerce API 🏪👜
+API small e-commerce
+electronic commerce, is a system of buying and selling products
+or services over the internet.
+It is a business model that has become very popular due to its convenience and efficiency.
 
-API small e-commerce 🤰🏽in construction....
-electronic commerce, is a system of buying and selling products or services over the internet. It is a business model that has become very popular due to its convenience and efficiency.
 ## Technologies Used 🪄
 
   [![Insomnia](https://img.shields.io/badge/Insomnia-5849BE?style=for-the-badge&logo=insomnia&logoColor=white)](https://insomnia.rest/)
@@ -17,94 +20,13 @@ electronic commerce, is a system of buying and selling products or services over
   [![Spring Data JPA](https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-data-jpa)
   [![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-security)
 
-## Functional Requirements
+## Vhat is left To Do?
 
-**Employee**: User responsible for creating and managing the store, stock, cash flow, adding products, etc., as well as getting, separating, and sending orders with products.
-
-**Customer**: User responsible for buying products from the store. They need to register to look at items in the store.
-
-**Products**: Items shown to customers for purchase.
-
-**Stock**: Where products are managed and counted. When products are bought, the quantity is decreased from the stock.
-
-**Order**: Contains all information about cart items after purchase.
-
-### To-Do Tasks
-
-- **Deployment**
-    - [ ]  Prepare docker environment
-    - [ ]  Prepare CI/CD with docker
-- **Logs**
-    - [ ]  Add Logs in system
-- **Products**
-    - [x]  Employee can create a product
-        - [x]  When creating, the system automatically creates images
-        - [x]  When creating, the system automatically creates product data in stock
-    - [x]  Employee can delete a product
-        - [x]  When deleting, the system automatically removes product images
-        - [x]  When deleting, the system automatically removes product data from stock
-    - [x]  All users can list a product
-    - [x]  All users can list all products by page
-    - [x]  Employee can update a product
-    - [x]  Obs: Add integrations tests
-- **Product Images**
-    - [x]  Employee can create a picture for a product
-    - [x]  Employee can delete a picture
-    - [x]  Employee can list a picture
-    - [x]  Obs: Add integration tests
-- **Stock Product (Future Integration)**
-    - [x]  Employee can create product data in stock
-    - [x]  Employee can increase product quantity in stock
-    - [x]  Employee can decrease product quantity in stock
-        - [x]  When decreasing, the system should allow only positive values in the stock item
-    - [x]  Employee can get all product quantities by page in stock
-    - [x]  Employee can get one product quantity in stock
-    - [x]  Obs: Add integration tests
-- **Employee (User with Role EMPLOYEE)**
-    - [ ]  Employee can delete themselves
-    - [x]  Employee can create other employees
-    - [ ]  System can add the role EMPLOYEE
-    - [ ]  Employee can get their own data
-    - [ ]  Employee can update their own data
-    - [ ]  Obs: Add integration tests
-- **Roles (User with Role)**
-    - [x]  System can list two roles **CUSTOMER and EMPLOYEE**
-- **Customer (User with Role CUSTOMER)**
-    - [ ]  Customer can delete themselves
-    - [ ]  System can add the role **CUSTOMER**
-    - [ ]  Customer can get their own data
-    - [ ]  Customer can update their own data
-    - [ ]  Customer can generate an order after payment
-    - [ ]  Obs: Add integration tests
-- **Order**
-    - [x]  Costumer can create an order with state OPEN
-    - [x]  Order can just have one product for item list;
-    - [x]  Can't have two of the same product in the same order
-    - [x]  The order has 2 states. **OPEN**: means the customer should be able to update or add more items to the order created. **BEGIN PICKED**: means the customer shouldn’t be able to update or add more items and can only view their order.
-    - [ ]  Order can show total value.
-    - [x]  When order state to be **BEGIN PICKED**. All product into order are decrease of **STOCK**.
-    - [x]  Order must have only costumer and don’t employee and get your items
-    - [x]  Customer can delete their order and delete your items
-    - [x]  Customer can get their order data and get your items
-    - [x]  Obs: Add integrations tests
-- **Order Items**
-    - [x]  Customer can have order items
-    - [x]  When state order **OPEN**
-        - [x]  Costumer can add Order item
-            - [x]  System validate if quantity of item before insert
-        - [x]  Costumer can remove Order item
-        - [x]  Costumer can update Order item
-            - [x]  System check if quantity of item before update
-        - [x]  Costumer can get one Order item
-    - [ ]  Obs: Add integrations tests
-- **Authentication**
-    - [x]  All users can log in
-    - [x]  Customers can register
-    - [ ]  Obs: Add integration tests
+Functional Requirements! You can see what is left to do! [Click here](./docs/requirements.md).
 
 ## How to Install 🔑
 
-To configure the E-Commerce-api project, follow the instructions below:
+To configure the ecommerceget project, follow the instructions below:
 
 #### Backend (Spring Boot);
 
@@ -112,7 +34,7 @@ To configure the E-Commerce-api project, follow the instructions below:
 
 1. Enter the backend folder:
    ```bash
-   cd backend
+   cd /
    ```
 
 2. Configure the `application.properties` file for the database settings (located in `src/main/resources`):
@@ -125,8 +47,8 @@ To configure the E-Commerce-api project, follow the instructions below:
     
     # SERVER
     server.error.include-stacktrace=never
-    server.port=8081
-    server.servlet.contextPath=/api
+    #server.port=8080
+    server.servlet.contextPath=/api/v1
     
     # TOKENS
     api.security.token.secret=${JWT_Secret:joao}
@@ -157,23 +79,23 @@ To configure the E-Commerce-api project, follow the instructions below:
       -- Replace `username` with the selected application user.
 
         ```
-        CREATE USER e-commerce;
-        CREATE DATABASE e-commerce;
-        GRANT ALL PRIVILEGES ON DATABASE e-commerce TO username;
+        CREATE USER e-commerceget;
+        CREATE DATABASE e-commerceget;
+        GRANT ALL PRIVILEGES ON DATABASE e-commerceget TO username;
         ```
 
 3. In the `application-prod.properties` file, update the information to match your database settings:
 
     ```
     # JPA
-    spring.datasource.url=jdbc:postgresql://e-commerce-container:5432/e-commerce
+    spring.datasource.url=jdbc:postgresql://e-commerceget-container:5432/e-commerceget
     spring.datasource.username=username
     spring.datasource.password=password
     
     # SERVER
     server.error.include-stacktrace=never
     server.port=8080
-    server.servlet.contextPath=/api
+    server.servlet.contextPath=/api/v1
     
     # TOKENS
     api.security.token.secret=${JWT_Secret:joao}
@@ -201,7 +123,7 @@ To configure the E-Commerce-api project, follow the instructions below:
 
 5. Use the routes and endpoints provided by the server to manage the deployment processes.
 
-<!-- Documentation link: https://doc-E-Commerce-api.netlify.app/#req_57f32835a4da4a64946ef9bff6a1330e -->
+<!-- Documentation link: https://doc-ecommerceget.netlify.app/#req_57f32835a4da4a64946ef9bff6a1330e -->
 
 1. **Access the Documents Folder**:
     - Navigate to the `/docs` folder on your computer.
@@ -217,7 +139,7 @@ To configure the E-Commerce-api project, follow the instructions below:
     - Select "Import/Export".
     - Click "Import Data".
     - Choose "From File".
-    - Navigate to the `/docs` folder, select the collection file, and click "Open".
+    - Navigate to the `/docs/collections` folder, select the collection file, and click "Open".
 
 5. **Verify Import**:
     - After the import, verify that the collection was added correctly in Insomnia.
@@ -225,19 +147,23 @@ To configure the E-Commerce-api project, follow the instructions below:
 Done! The collection should now be available in Insomnia for you to use.
 
 ## How to Use 👨🏽‍🏫
+
 **You can:**
 
-* .. In construction
-
+* Register products
+* Manage orders
+* Manage stock
 
 **Benefits:**
 
-* .. In construction
+* Centralize the management of products and orders
+* Monitor the status of each order
+* Facilitate the management of stock
 
+**Usage Example:**
 
-**Example Usage:**
-
-* 
+* An online store can use the system to register all available products, manage received orders, and track the delivery status of each order.
+* A sales manager can use the system to check which products are selling the most and adjust the stock according to demand.
 
 ## Author
 
