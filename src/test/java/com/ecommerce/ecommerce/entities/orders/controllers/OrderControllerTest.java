@@ -2,9 +2,9 @@ package com.ecommerce.ecommerce.entities.orders.controllers;
 
 import com.ecommerce.ecommerce.entities.orderitems.dtos.ItemInsertedDTO;
 import com.ecommerce.ecommerce.entities.orders.dtos.OrderInsertedDTO;
-import com.ecommerce.ecommerce.entities.orders.enums.OrderState;
+import com.ecommerce.ecommerce.entities.orders.model.Order;
 import com.ecommerce.ecommerce.entities.orders.repository.OrderRepository;
-import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedDTO;
+import com.ecommerce.ecommerce.entities.orders.services.OrderServices;
 import com.ecommerce.ecommerce.entities.products.dtos.ProductCreatedWithStockDTO;
 import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
@@ -65,6 +65,9 @@ class OrderControllerTest {
 	@Autowired
 	private ProductServices productServices;
 
+	@Autowired
+	private OrderServices orderServices;
+
 	@BeforeEach
 	@AfterEach
 	void deleteAll() throws Exception {
@@ -75,9 +78,15 @@ class OrderControllerTest {
 		orderRepository.deleteAll();
 	}
 
-
+	/*
+	[X] Create order with items for costumer
+	[x] Close order with items
+	[] Try to update order closed or begin picked
+	[] Try to delete order closed or begin picked
+	[x] Try to get all orders
+	* */
 	@Test
-	@DisplayName("Create order one order ")
+	@DisplayName("Create order with items for costumer")
 	void createOrderCase1() throws Exception {
 		this.createEmployee();
 		// Create user
@@ -87,13 +96,7 @@ class OrderControllerTest {
 		String userId = costumer.getString("userId");
 
 		// Create product with stock
-		Product product = this.productServices.createWithStock(new ProductCreatedWithStockDTO(null,
-				"Product",
-				new BigDecimal(10.30),
-				"Details of product",
-				new ItemStockCreatedDTO(null, null, 6, 88.00),
-				new ArrayList<ImageProductCreatedDTO>()
-		));
+		Product product = createProduct();
 		assertNotNull(product.getId());
 
 		// Test create order with items
@@ -116,191 +119,208 @@ class OrderControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
 						.content(objectMapper.writeValueAsString(order)))
-				.andExpect(MockMvcResultMatchers.status().isCreated());
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Product"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(new BigDecimal(10.30)))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of product"));
+				.andExpect(MockMvcResultMatchers.status().isCreated())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.methodPayment").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.orderState").value("OPEN"));
 	}
 
-//	@Test
-//	@DisplayName("Create one product with success and return 204")
-//	void createOneCase1() throws Exception {
-//
-//		this.createEmployee();
-//
-//		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
-//		ObjectMapper objectMapper = new ObjectMapper();
-//		ProductCreatedDTO product = new ProductCreatedDTO(
-//				null,
-//				"Product",
-//				new BigDecimal(10.30),
-//				"Details of product",
-//				images
-//		);
-//
-//		mockMvc.perform(MockMvcRequestBuilders.post("/products")
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
-//						.content(objectMapper.writeValueAsString(product)))
-//				.andExpect(MockMvcResultMatchers.status().isCreated())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Product"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of product"));
-//	}
+	@Test
+	@DisplayName("Should close the order change state to BEGIN_PICKED")
+	void closeOrderCase1() throws Exception {
+		this.createEmployee();
+		// Create user
+		String costumerString = this.createCostumer();
+		var costumer = new JSONObject(costumerString);
 
-//	@Test
-//	@DisplayName("Create one product with images success and return 204")
-//	void createOneCase2() throws Exception {
-//
-//		this.createEmployee();
-//
-//		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
-//		images.add(new ImageProductCreatedDTO(null, "image1.png", null));
-//		images.add(new ImageProductCreatedDTO(null, "image2.png", null));
-//
-//		ObjectMapper objectMapper = new ObjectMapper();
-//		ProductCreatedDTO product = new ProductCreatedDTO(
-//				null,
-//				"Product",
-//				new BigDecimal(10.30),
-//				"Details of product",
-//				images
-//		);
-//
-//		mockMvc.perform(MockMvcRequestBuilders.post("/products")
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
-//						.content(objectMapper.writeValueAsString(product)))
-//				.andExpect(MockMvcResultMatchers.status().isCreated())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Product"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(new BigDecimal(10.30)))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of product"));
-//	}
-//
-//	@Test
-//	@DisplayName("Create one product with images and add items stock success and return 204")
-//	void createOneWithStock() throws Exception {
-//		this.createEmployee();
-//
-//		List<ImageProductCreatedDTO> images = new ArrayList<ImageProductCreatedDTO>();
-//		images.add(new ImageProductCreatedDTO(null, "image1.png", null));
-//		images.add(new ImageProductCreatedDTO(null, "image2.png", null));
-//
-//		var objectMapper = new ObjectMapper();
-//		var product = new ProductCreatedWithStockDTO(
-//				null,
-//				"Product",
-//				new BigDecimal(10.30),
-//				"Details of product",
-//				new ItemStockCreatedDTO(null, null, 1, 88.00),
-//				images
-//		);
-//
-//		mockMvc.perform(MockMvcRequestBuilders.post("/products")
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
-//						.content(objectMapper.writeValueAsString(product)))
-//				.andExpect(MockMvcResultMatchers.status().isCreated())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Product"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(new BigDecimal(10.30)))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of product"));
-//	}
-//
-//	@Test
-//	@DisplayName("Update a product successfully and return 200")
-//	void updateOneCase1() throws Exception {
-//
-//		this.createEmployee();
-//
-//		ObjectMapper objectMapper = new ObjectMapper();
-//		String productString = this.createProduct();
-//
-//		// Transform in JSON object
-//		JSONObject product = new JSONObject(productString);
-//		// Access the 'id' property
-//		String id = product.getString("id");
-//
-//
-//		var productUpdated = new ProductCreatedDTO(
-//				null,
-//				"Edited Product",
-//				new BigDecimal(10.30),
-//				"Details of product",
-//				new ArrayList<ImageProductCreatedDTO>()
-//		);
-//
-//		mockMvc.perform(MockMvcRequestBuilders.put("/products/{id}", id)
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
-//						.content(objectMapper.writeValueAsString(productUpdated)))
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Edited Product"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(new BigDecimal(10.30)))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of product"));
-//	}
-//
-//	@Test
-//	@DisplayName("Delete one product with success and return 200")
-//	void deleteOneById() throws Exception {
-//		this.createEmployee();
-//
-//		String productString = this.createProduct();
-//
-//		var product = new JSONObject(productString);
-//
-//		String id = product.getString("id");
-//
-//		mockMvc.perform(MockMvcRequestBuilders.delete("/products/{id}", id)
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andExpect(MockMvcResultMatchers.content().string("Product deleted: " + id));
-//	}
-//
-//	@Test
-//	@DisplayName("Find all products and return success 200")
-//	void findAllCase1() throws Exception {
-//		this.createEmployee();
-//		this.createProduct();
-//
-//		mockMvc.perform(MockMvcRequestBuilders.get("/products"))
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Product"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$[0].details").value("Details of product"));
-//	}
-//
-//	@Test
-//	@DisplayName("Find all by page and return success 200")
-//	void findByPageCase2() throws Exception {
-//		this.createEmployee();
-//		this.createProduct();
-//		this.createProduct();
-//		mockMvc.perform(MockMvcRequestBuilders.get("/products/page")
-//						.param("page", "0")
-//						.param("size", "1")
-//						.param("sort", "id")
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(1));
-//	}
-//
-//	@Test
-//	@DisplayName("Find one by id and return success 200")
-//	void findOneByIdCase1() throws Exception {
-//		// Create Product
-//		this.createEmployee();
-//		String productString = this.createProduct();
-//		JSONObject product = new JSONObject(productString);
-//		// Extract Id
-//		String id = product.getString("id");
-//
-//
-//		mockMvc.perform(MockMvcRequestBuilders.get("/products/{id}", id)
-//						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Product"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Details of product"));
-//	}
+		String userId = costumer.getString("userId");
+
+		// Create product with stock
+		Product product = createProduct();
+		assertNotNull(product.getId());
+
+		// Test create order with items
+		var item = new ItemInsertedDTO();
+		item.setProductId(product.getId());
+		item.setQuantity(3);
+
+		assertNotNull(item.getProductId());
+
+		List<ItemInsertedDTO> items = new ArrayList<ItemInsertedDTO>();
+		items.add(item);
+
+		var order = new OrderInsertedDTO();
+		order.setUserId(userId);
+		order.setMethodPayment("AVISTA");
+		order.setItems(items);
+
+		Order orderCreated = orderServices.create(order);
+		String orderId = orderCreated.getId();
+
+		mockMvc.perform(MockMvcRequestBuilders.patch("/orders/close/{orderId}", orderId)
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
+						.andExpect(MockMvcResultMatchers.status().isOk());
+	}
+
+	@Test
+	@DisplayName("Should to update the order by id with state OPEN")
+	void updateOrderCase1() throws Exception {
+		var objectMapper = new ObjectMapper();
+		this.createEmployee();
+		// Create user
+		String costumerString = this.createCostumer();
+		var costumer = new JSONObject(costumerString);
+
+		String userId = costumer.getString("userId");
+
+		// Create product with stock
+		Product product = createProduct();
+		assertNotNull(product.getId());
+
+		// Test create order with items
+		var item = new ItemInsertedDTO();
+		item.setProductId(product.getId());
+		item.setQuantity(3);
+
+		assertNotNull(item.getProductId());
+
+		List<ItemInsertedDTO> items = new ArrayList<ItemInsertedDTO>();
+		items.add(item);
+
+		var order = new OrderInsertedDTO();
+		order.setUserId(userId);
+		order.setMethodPayment("AVISTA");
+		order.setItems(items);
+
+		Order orderCreated = orderServices.create(order);
+		String orderId = orderCreated.getId();
+
+		// Order updated
+		OrderInsertedDTO orderUpdated = new OrderInsertedDTO();
+		orderUpdated.setUserId(userId);
+		orderUpdated.setMethodPayment("CREDIT");
+
+		mockMvc.perform(MockMvcRequestBuilders.put("/orders/{orderId}", orderId)
+						.contentType(MediaType.APPLICATION_JSON)
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
+						.content(objectMapper.writeValueAsString(orderUpdated)))
+				.andExpect(MockMvcResultMatchers.status().isOk());
+	}
+	@Test
+	@DisplayName("Should to delete the order by id with state OPEN")
+	void deleteOrderCase1() throws Exception {
+		this.createEmployee();
+		// Create user
+		String costumerString = this.createCostumer();
+		var costumer = new JSONObject(costumerString);
+
+		String userId = costumer.getString("userId");
+
+		// Create product with stock
+		Product product = createProduct();
+		assertNotNull(product.getId());
+
+		// Test create order with items
+		var item = new ItemInsertedDTO();
+		item.setProductId(product.getId());
+		item.setQuantity(3);
+
+		assertNotNull(item.getProductId());
+
+		List<ItemInsertedDTO> items = new ArrayList<ItemInsertedDTO>();
+		items.add(item);
+
+		var order = new OrderInsertedDTO();
+		order.setUserId(userId);
+		order.setMethodPayment("AVISTA");
+		order.setItems(items);
+
+		Order orderCreated = orderServices.create(order);
+		String orderId = orderCreated.getId();
+
+		mockMvc.perform(MockMvcRequestBuilders.delete("/orders/{orderId}", orderId)
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
+				.andExpect(MockMvcResultMatchers.status().isOk());
+	}
+
+	@Test
+	@DisplayName("Should to get order by id")
+	void getOneOrderByIdCase1() throws Exception {
+		this.createEmployee();
+		// Create user
+		String costumerString = this.createCostumer();
+		var costumer = new JSONObject(costumerString);
+
+		String userId = costumer.getString("userId");
+
+		// Create product with stock
+		Product product = createProduct();
+		assertNotNull(product.getId());
+
+		// Test create order with items
+		var item = new ItemInsertedDTO();
+		item.setProductId(product.getId());
+		item.setQuantity(3);
+
+		assertNotNull(item.getProductId());
+
+		List<ItemInsertedDTO> items = new ArrayList<ItemInsertedDTO>();
+		items.add(item);
+
+		var order = new OrderInsertedDTO();
+		order.setUserId(userId);
+		order.setMethodPayment("AVISTA");
+		order.setItems(items);
+
+		Order orderCreated = orderServices.create(order);
+		String orderId = orderCreated.getId();
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders/{orderId}", orderId)
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.methodPayment").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.orderItems").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.orderItems").isArray());
+	}
+
+	@Test
+	@DisplayName("Should to get all orders")
+	void getAllOrderByIdCase1() throws Exception {
+		this.createEmployee();
+		// Create user
+		String costumerString = this.createCostumer();
+		var costumer = new JSONObject(costumerString);
+
+		String userId = costumer.getString("userId");
+
+		// Create product with stock
+		Product product = createProduct();
+		assertNotNull(product.getId());
+
+		// Test create order with items
+		var item = new ItemInsertedDTO();
+		item.setProductId(product.getId());
+		item.setQuantity(3);
+
+		assertNotNull(item.getProductId());
+
+		List<ItemInsertedDTO> items = new ArrayList<ItemInsertedDTO>();
+		items.add(item);
+
+		var order = new OrderInsertedDTO();
+		order.setUserId(userId);
+		order.setMethodPayment("AVISTA");
+		order.setItems(items);
+
+		Order orderCreated = orderServices.create(order);
+		String orderId = orderCreated.getId();
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/orders")
+						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(1));
+	}
 
 	private String createEmployee() throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -321,6 +341,7 @@ class OrderControllerTest {
 				.getContentAsString();
 		return response;
 	}
+
 	private String createCostumer() throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
 		var userCreated = new CostumerRequestDTO(
@@ -341,27 +362,14 @@ class OrderControllerTest {
 		return response;
 	}
 
-	private String createProduct() throws Exception {
-
-		ObjectMapper objectMapper = new ObjectMapper();
-		ProductCreatedDTO product = new ProductCreatedDTO(
-				null,
+	private Product createProduct() {
+		Product product = this.productServices.createWithStock(new ProductCreatedWithStockDTO(null,
 				"Product",
 				new BigDecimal(10.30),
 				"Details of product",
+				new ItemStockCreatedDTO(null, null, 3, 88.00),
 				new ArrayList<ImageProductCreatedDTO>()
-		);
-
-		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-						.post("/products")
-						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(product)))
-				.andReturn();
-
-		String response = mvcResult
-				.getResponse()
-				.getContentAsString();
-		return response;
+		));
+		return product;
 	}
 }

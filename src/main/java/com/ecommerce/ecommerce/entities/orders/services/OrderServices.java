@@ -65,24 +65,25 @@ public class OrderServices {
 
 		itemsDto.forEach(itemDto -> {
 			var itemEntity = new OrderItem();
-
-			System.out.println(itemDto.getProductId());
-			Product product = productRepository.findById(itemDto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found"));
+			String productId = itemDto.getProductId();
+			Product product = productRepository.findById(productId).orElseThrow(() -> new NotFoundCustomException("Product not found"));
 
 			BeanUtils.copyProperties(itemDto, itemEntity);
 			itemEntity.setProduct(product);
 			itemEntity.setOrder(orderCreated);
 
+			String orderId = orderCreated.getId();
+
 			Boolean isAlreadyExistsItem = orderItemsRepository.existsByOrderAndProduct(
-					orderRepository.findById(itemDto.getOrderId()).orElseThrow(() -> new NotFoundCustomException("Order not found")),
-					productRepository.findById(itemDto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found"))
+					orderRepository.findById(orderId).orElseThrow(() -> new NotFoundCustomException("Order not found")),
+					productRepository.findById(productId).orElseThrow(() -> new NotFoundCustomException("Product not found"))
 			);
 			if (isAlreadyExistsItem == true) throw new NotFoundCustomException("Product already exists in this order");
 
 			checkStockQuantity(itemDto);
+			orderItemsRepository.save(itemEntity);
 		});
-
-		return orderRepository.save(order);
+		return orderCreated;
 	}
 
 	@Transactional

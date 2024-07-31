@@ -20,7 +20,7 @@ public interface OrderItemsRepository extends JpaRepository<OrderItem, String> {
 			    orders.user_id,
 			    items.quantity,
 			    items.product_id,
-			    product."name" AS name_product,
+			    product.name_product,
 			    product.price,
 			    items.quantity * product.price AS total_price_item
 			FROM public.order_items items
@@ -37,7 +37,7 @@ public interface OrderItemsRepository extends JpaRepository<OrderItem, String> {
 			    orders.user_id,
 			    items.quantity,
 			    items.product_id,
-			    product."name" AS name_product,
+			    product.name_product,
 			    product.price,
 			    items.quantity * product.price AS total_price_item
 			FROM public.order_items items
@@ -55,7 +55,7 @@ public interface OrderItemsRepository extends JpaRepository<OrderItem, String> {
 			    orders.user_id,
 			    items.quantity,
 			    items.product_id,
-			    product."name" AS name_product,
+			    product.name_product,
 			    product.price,
 			    items.quantity * product.price AS total_price_item
 			FROM public.order_items items
