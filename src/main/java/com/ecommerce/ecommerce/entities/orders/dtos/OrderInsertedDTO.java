@@ -1,8 +1,10 @@
 package com.ecommerce.ecommerce.entities.orders.dtos;
 
-import com.ecommerce.ecommerce.entities.orderitems.dtos.OrderItemInsertedDTO;
+import com.ecommerce.ecommerce.entities.orderitems.dtos.ItemInsertedDTO;
+import com.ecommerce.ecommerce.entities.orders.enums.OrderState;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
@@ -16,6 +18,8 @@ public class OrderInsertedDTO{
 	@NotBlank
 	private String methodPayment;
 
-	@NotNull
-	private List<OrderItemInsertedDTO> items;
+	private List<ItemInsertedDTO> items;
+
+	@Enumerated(EnumType.STRING)
+	private OrderState orderState;
 }

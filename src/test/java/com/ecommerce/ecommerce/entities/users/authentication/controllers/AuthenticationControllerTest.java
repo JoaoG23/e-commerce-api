@@ -48,7 +48,8 @@ class AuthenticationControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(userCreated)))
 				.andExpect(MockMvcResultMatchers.status().isCreated())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.token").exists());
+				.andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.userId").exists());
 	}
 
 	@Test
@@ -65,6 +66,7 @@ class AuthenticationControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(userCreated)))
 				.andExpect(MockMvcResultMatchers.status().isCreated())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.token").exists());
+				.andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.userId").exists());
 	}
 }

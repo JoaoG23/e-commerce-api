@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerce.entities.stock.repository;
 
+import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.stock.model.Stock;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,4 +18,6 @@ public interface StockRepository extends JpaRepository<Stock, String> {
 	@Modifying
 	@Query(value = "DELETE FROM public.stock_products p WHERE p.products_id =:products_id", nativeQuery = true)
 	void deleteByProductsId(@Param("products_id") String productId);
+
+	Stock findByProduct(Product product);
 }

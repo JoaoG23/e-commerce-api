@@ -26,7 +26,7 @@ public class Product {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
 
-	@Column(nullable = false)
+	@Column(name = "name_product", nullable = false)
 	private String name;
 
 	private BigDecimal price;

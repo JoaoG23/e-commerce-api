@@ -38,9 +38,10 @@ public class AuthenticationController {
 	public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO body) throws NotFoundCustomException {
 		try {
 			User user = this.repository.findByEmail(body.email()).orElseThrow(() -> new UserNotFoundException("User or password invalid"));
+			String userId = user.getId();
 			if (passwordEncoder.matches(body.password(), user.getPassword())) {
 				String token = tokenServices.generateToken(user);
-				return ResponseEntity.ok(new AuthResponseDTO(token));
+				return ResponseEntity.ok(new AuthResponseDTO(userId, token));
 			}
 			return ResponseEntity.badRequest().build();
 		} catch (UserNotFoundException e) {
@@ -58,13 +59,16 @@ public class AuthenticationController {
 			newUser.setEmail(body.email());
 			newUser.setName(body.name());
 			newUser.setRole(UserRole.EMPLOYEE);
-			this.repository.save(newUser);
+
+			User savedUser = this.repository.save(newUser);
+			String userId = savedUser.getId();
 
 			String token = this.tokenServices.generateToken(newUser);
-			return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(token));
+			return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(userId, token));
 		}
 		return ResponseEntity.badRequest().body("Employee already exists");
 	}
+
 	@PostMapping("/costumer/register")
 	public ResponseEntity<?> registerCostumer(@RequestBody @Valid CostumerRequestDTO body) {
 		Optional<User> user = this.repository.findByEmail(body.email());
@@ -75,10 +79,12 @@ public class AuthenticationController {
 			newUser.setEmail(body.email());
 			newUser.setName(body.name());
 			newUser.setRole(UserRole.COSTUMER);
-			this.repository.save(newUser);
+
+			User savedUser = this.repository.save(newUser);
+			String userId = savedUser.getId();
 
 			String token = this.tokenServices.generateToken(newUser);
-			return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(token));
+			return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(userId, token));
 		}
 		return ResponseEntity.badRequest().body("Costumer already exists");
 	}

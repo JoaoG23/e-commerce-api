@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerce.entities.orderitems.dtos;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.ToString;
 
@@ -7,12 +8,13 @@ import java.util.Optional;
 
 @Data
 @ToString
-public class OrderItemInsertedDTO {
+public class ItemInsertedDTO {
 
 	private Optional<String> id;
 	@NotBlank
 	private String productId;
-	private String orderId;
 	@NotBlank
+	private String orderId;
+	@NotNull
 	private Integer quantity;
 }

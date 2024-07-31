@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.Optional;
 
 @Data
-public class OrderItemDTO {
+public class ItemDTO {
 
 	private Optional<String> id;
 	@NotBlank
