@@ -5,6 +5,8 @@ import com.ecommerce.ecommerce.entities.orderitems.dtos.ItemInsertedDTO;
 import com.ecommerce.ecommerce.entities.orderitems.dtos.ItemQueryDTO;
 import com.ecommerce.ecommerce.entities.orderitems.model.OrderItem;
 import com.ecommerce.ecommerce.entities.orderitems.repository.OrderItemsRepository;
+import com.ecommerce.ecommerce.entities.orders.enums.OrderState;
+import com.ecommerce.ecommerce.entities.orders.model.Order;
 import com.ecommerce.ecommerce.entities.orders.repository.OrderRepository;
 import com.ecommerce.ecommerce.entities.products.model.Product;
 import com.ecommerce.ecommerce.entities.products.repository.ProductRepository;
@@ -39,7 +41,6 @@ public class OrderItemServices {
 		entity.setOrder(orderRepository.findById(dto.getOrderId()).orElseThrow(() -> new NotFoundCustomException("Order not found")));
 		entity.setProduct(productRepository.findById(dto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found")));
 
-
 		Boolean isExistsProductInOrder = orderItemRepository.existsByOrderAndProduct(
 				orderRepository.findById(dto.getOrderId()).orElseThrow(() -> new NotFoundCustomException("Order not found")),
 				productRepository.findById(dto.getProductId()).orElseThrow(() -> new NotFoundCustomException("Product not found"))
@@ -49,6 +50,8 @@ public class OrderItemServices {
 		entity.setQuantity(dto.getQuantity());
 
 		checkStockQuantity(dto);
+
+		checkOrderIsOpenById(dto.getOrderId());
 
 		return orderItemRepository.save(entity);
 	}
@@ -72,6 +75,7 @@ public class OrderItemServices {
 		if (isExistsProductInOrder == false)
 			throw new NotFoundCustomException("Product already exists in another item");
 
+		checkOrderIsOpenById(dto.getOrderId());
 		checkStockQuantity(dto);
 		return orderItemRepository.save(entity);
 	}
@@ -130,6 +134,11 @@ public class OrderItemServices {
 		int remainingQuantity = availableQuantity - itemDto.getQuantity();
 		if (remainingQuantity < 0)
 			throw new NotFoundCustomException("Insufficient stock! Requested quantity: " + itemDto.getQuantity() + ". Available quantity: " + availableQuantity);
+	}
+
+	private void checkOrderIsOpenById(String id) {
+		Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Order not found"));
+		if(order.getOrderState() != OrderState.OPEN) throw new NotFoundCustomException("Order is BEGIN PICKED or CLOSED. You can't update or manager the order");
 	}
 
 	private void validateIfOrderItemNotExistsById(String id) {

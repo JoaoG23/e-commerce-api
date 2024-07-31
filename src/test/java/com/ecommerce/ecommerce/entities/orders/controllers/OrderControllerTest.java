@@ -159,7 +159,10 @@ class OrderControllerTest {
 
 		mockMvc.perform(MockMvcRequestBuilders.patch("/orders/close/{orderId}", orderId)
 						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN))
-						.andExpect(MockMvcResultMatchers.status().isOk());
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.methodPayment").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.orderState").value("BEGIN_PICKED"));
 	}
 
 	@Test
@@ -204,8 +207,12 @@ class OrderControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.header(HttpHeaders.AUTHORIZATION, "Bearer " + TOKEN)
 						.content(objectMapper.writeValueAsString(orderUpdated)))
-				.andExpect(MockMvcResultMatchers.status().isOk());
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.methodPayment").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.orderState").value("OPEN"));
 	}
+
 	@Test
 	@DisplayName("Should to delete the order by id with state OPEN")
 	void deleteOrderCase1() throws Exception {
@@ -280,6 +287,7 @@ class OrderControllerTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.methodPayment").exists())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.orderState").value("OPEN"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.orderItems").exists())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.orderItems").isArray());
 	}

@@ -51,7 +51,7 @@ public class OrderServices {
 	public Order create(OrderInsertedDTO orderDTO) {
 		var order = new Order();
 		BeanUtils.copyProperties(orderDTO, order);
-		order.setOrderState(OrderState.OPEN);
+		order.setOrderState(OrderState.valueOf("OPEN"));
 
 		User user = userRepository.findById(orderDTO.getUserId())
 				.orElseThrow(() -> new NotFoundCustomException("User not found"));
@@ -89,6 +89,7 @@ public class OrderServices {
 	@Transactional
 	public void deleteById(String id) {
 		validateOrderNotExists(id);
+		checkOrderIsOpenById(id);
 		orderRepository.deleteById(id);
 
 	}
@@ -96,15 +97,18 @@ public class OrderServices {
 	@Transactional
 	public Order updateById(String id, OrderInsertedDTO orderDTO) {
 		validateOrderNotExists(id);
-		Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Order not found"));
-		BeanUtils.copyProperties(orderDTO, order);
 
-		order.setId(id);
+		checkOrderIsOpenById(id);
+
+		Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Order not found"));
 		User user = userRepository.findById(orderDTO.getUserId())
 				.orElseThrow(() -> new NotFoundCustomException("Costumer not found"));
-
 		if (user.getRole() != UserRole.COSTUMER) throw new NotFoundCustomException("Costumer don't exist");
 
+
+		order.setId(id);
+		order.setMethodPayment(orderDTO.getMethodPayment());
+		order.setOrderState(order.getOrderState());
 		order.setUser(user);
 
 		return orderRepository.save(order);
@@ -113,6 +117,9 @@ public class OrderServices {
 	@Transactional
 	public Order closeOrderById(String id) {
 		validateOrderNotExists(id);
+
+		checkOrderIsOpenById(id);
+
 		Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundCustomException("Order not found"));
 		order.setOrderState(OrderState.BEGIN_PICKED);
 
@@ -134,6 +141,7 @@ public class OrderServices {
 	}
 
 	public Optional<Order> findById(String id) {
+		validateOrderNotExists(id);
 		return orderRepository.findById(id);
 	}
 
