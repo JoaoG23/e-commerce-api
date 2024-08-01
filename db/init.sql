@@ -1,3 +1,3 @@
-CREATE USER e-commerceget;
-CREATE DATABASE e-commerceget;
-GRANT ALL PRIVILEGES ON DATABASE e-commerceget TO admin;
+CREATE USER ecommerceget;
+CREATE DATABASE ecommerceget;
+GRANT ALL PRIVILEGES ON DATABASE ecommerceget TO admin;
