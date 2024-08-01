@@ -23,6 +23,6 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            joaog545/ecommerce-get:v1
+            joaog545/ecommerce-get:${{github.run_number}}
             joaog545/ecommerce-get:lastest
          
