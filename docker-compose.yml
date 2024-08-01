@@ -23,7 +23,7 @@ services:
     container_name: api-ecommerceget-container
     restart: on-failure
     ports:
-      - "${PORT_SERVER_DOCKER}:8080"
+      - "${PORT_SERVER_DOCKER_PROD}:8080"
     volumes:
       - .m2:/root/.m2
     stdin_open: true
