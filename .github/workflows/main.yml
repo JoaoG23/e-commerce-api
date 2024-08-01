@@ -1,0 +1,21 @@
+name: CI-CD
+
+on:
+  push:
+    branches: ["main"]
+jobs:
+  CI:
+    runs-on: ubuntu-lastest
+
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: Generate image docker e-commerceget
+        uses: docker/build-push-action@v6.5.0
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: true
+          tags: |
+            joaog545/ecommerce-get:v1
+            joaog545/ecommerce-get:lastest
+         
