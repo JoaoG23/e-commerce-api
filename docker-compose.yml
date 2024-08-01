@@ -1,21 +1,19 @@
 version: "3.7"
 services:
-  db:
-    build: "./db"
-    image: db-ecommerceget-image
-#    restart: always
-    container_name: db-ecommerceget-container
-    env_file:
-      - ./db/db.env
-    networks:
-      - ecommerceget-network
-    volumes:
-      - ./db/data:/var/lib/postgresql/data
-    ports:
-      - "5440:5432"
+#  db:
+#    build: "./db"
+#    image: db-ecommerceget-image
+##    restart: always
+#    container_name: db-ecommerceget-container
+#    env_file:
+#      - ./db/db.env
+#    networks:
+#      - ecommerceget-network
+#    volumes:
+#      - ./db/data:/var/lib/postgresql/data
+#    ports:
+#      - "5440:5432"
   app:
-    depends_on:
-      - db
     build:
       context: "./"
     working_dir: /usr/src/ecommerceget
