@@ -12,16 +12,18 @@ services:
 #    volumes:
 #      - ./db/data:/var/lib/postgresql/data
 #    ports:
-#      - "5440:5432"
+#      - "${PORT_DB_DOCKER}:5432"
   app:
     build:
       context: "./"
+    env_file:
+      - ./prod.env
     working_dir: /usr/src/ecommerceget
     image: api-ecommerceget-image
     container_name: api-ecommerceget-container
     restart: on-failure
     ports:
-      - "3005:8080"
+      - "${PORT_SERVER_DOCKER_PROD}:8080"
     volumes:
       - .m2:/root/.m2
     stdin_open: true
